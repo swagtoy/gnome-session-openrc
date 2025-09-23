@@ -1,0 +1,8 @@
+#!/sbin/openrc-run
+
+description="GNOME Session (base)"
+
+depend() {
+	need gnome-shell
+	need gnome-settings-daemon
+}

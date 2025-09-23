@@ -1,0 +1,7 @@
+#!/sbin/openrc-run
+
+description="GNOME Session (wayland)"
+
+depend() {
+	need gnome-session
+}

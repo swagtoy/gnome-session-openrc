@@ -1,0 +1,8 @@
+#!/sbin/openrc-run
+
+description="GNOME Shell"
+XDG_CURRENT_DESKTOP=GNOME
+export XDG_CURRENT_DESKTOP
+command="/usr/bin/gnome-shell"
+command_args="--wayland"
+#pidfile="/tmp/gnome-shell.pid"
