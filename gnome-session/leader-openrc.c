@@ -22,8 +22,16 @@
 #include <glib.h>
 #include <glib-unix.h>
 #include <gio/gio.h>
+#include <sys/syslog.h>
 
 #include "gsm-util.h"
+
+void
+debug_logger(gchar const *log_domain,
+             GLogLevelFlags log_level,
+             gchar const *message,
+             gpointer user_data);
+
 
 typedef struct {
         GDBusConnection *session_bus;
@@ -198,6 +206,16 @@ monitor_hangup_cb (int          fd,
         return G_SOURCE_REMOVE;
 }
 
+void
+debug_logger(gchar const *log_domain,
+             GLogLevelFlags log_level,
+             gchar const *message,
+             gpointer user_data)
+{
+        printf("%s\n", message);
+        syslog(LOG_INFO, "%s", message);
+}
+
 /**
  * This is the session leader, i.e. it is the only process that's not managed
  * by the systemd user instance. This process is the one executed by GDM, and
@@ -234,6 +252,9 @@ monitor_hangup_cb (int          fd,
 int
 main (int argc, char **argv)
 {
+#if 1
+        g_log_set_default_handler(debug_logger, NULL);
+#endif
         g_autoptr (GError) error = NULL;
         g_auto (Leader) ctx = { .fifo_fd = -1 };
         const char *session_name = NULL;
@@ -249,6 +270,8 @@ main (int argc, char **argv)
         debug_string = g_getenv ("GNOME_SESSION_DEBUG");
         if (debug_string != NULL)
             g_log_set_debug_enabled (atoi (debug_string) == 1);
+        g_log_set_debug_enabled(TRUE);
+        g_debug("Hello.");
 
         //gsm_util_export_user_environment (&error);
         //if (error)

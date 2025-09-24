@@ -25,11 +25,16 @@
 #include <glib.h>
 #include <glib-unix.h>
 #include <gio/gio.h>
+#include <sys/syslog.h>
 
 #include "gsm-util.h"
 
 #define INIT_WORKER_PATH (LIBEXECDIR "/gnome-session-init-worker")
-
+void
+debug_logger(gchar const *log_domain,
+             GLogLevelFlags log_level,
+             gchar const *message,
+             gpointer user_data);
 static char *
 shell_to_login_shell (const char *shell)
 {
@@ -169,9 +174,23 @@ set_up_environment (void)
         g_setenv ("XDG_MENU_PREFIX", "gnome-", TRUE);
 }
 
+void
+debug_logger(gchar const *log_domain,
+             GLogLevelFlags log_level,
+             gchar const *message,
+             gpointer user_data)
+{
+        printf("%s\n", message);
+        syslog(LOG_INFO, "%s", message);
+}
+
+
 int
 main (int argc, char **argv)
 {
+#if 1
+        g_log_set_default_handler(debug_logger, NULL);
+#endif
         g_autoptr (GError) error = NULL;
         g_autofree char *session_name = NULL;
         gboolean debug = FALSE;
@@ -191,6 +210,7 @@ main (int argc, char **argv)
                 { NULL, 0, 0, 0, NULL, NULL, NULL }
         };
 
+        g_info("Hello");
         /* Make sure that we have a session bus */
         if (!g_getenv ("DBUS_SESSION_BUS_ADDRESS"))
                 g_error ("No session bus running! Cannot continue");
