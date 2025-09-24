@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+description="GNOME session dbus daemon"
+
+start() {
+	ebegin "Starting ${description}"
+	if [ -f /usr/local/libexec/gnome-session-service ]; then
+		start-stop-daemon --start --exec /usr/local/libexec/gnome-session-service -b -- --session=gnome 
+	else
+		echo nope
+		#/usr/libexec/gnome-session-service --session=gnome
+	fi
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping ${description}"
+	# hack
+	kill -15 `pgrep -f gnome-session-service`
+	eend $?
+}

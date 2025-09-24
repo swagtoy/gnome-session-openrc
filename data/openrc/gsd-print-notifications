@@ -3,4 +3,5 @@
 description="${RC_SVCNAME} daemon"
 command="/usr/libexec/${RC_SVCNAME}"
 command_args=""
-#pidfile="/tmp/gnome-shell.pid"
+command_background="true"
+pidfile="/tmp/${RC_SVCNAME}.pid"

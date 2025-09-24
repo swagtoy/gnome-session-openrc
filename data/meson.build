@@ -133,6 +133,7 @@ else
     'openrc/gnome-session-wayland',
     'openrc/gnome-shell',
     'openrc/gnome-settings-daemon',
+    'openrc/gnome-session-dbus',
 
     # gnome settings daemon
     'openrc/gsd-a11y-settings',
