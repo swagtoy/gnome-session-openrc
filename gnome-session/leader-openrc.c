@@ -69,10 +69,24 @@ openrc_unit_action (const char       *unit,
 }
 
 static gboolean
+start_gnome_pls (
+                 GError          **error)
+{
+	return g_spawn_command_line_async("/usr/bin/gnome-shell --wayland", error);
+}
+
+static gboolean
 openrc_start_unit (const char       *unit,
                     GError          **error)
 {
 	return openrc_unit_action(unit, "start", error);
+}
+
+static gboolean
+openrc_stop_unit (const char       *unit,
+                    GError          **error)
+{
+	return openrc_unit_action(unit, "stop", error);
 }
 
 static gboolean
@@ -271,7 +285,7 @@ main (int argc, char **argv)
         if (debug_string != NULL)
             g_log_set_debug_enabled (atoi (debug_string) == 1);
         g_log_set_debug_enabled(TRUE);
-        g_debug("Hello.");
+        g_debug("Hi! from leader-openrc.");
 
         //gsm_util_export_user_environment (&error);
         //if (error)
@@ -285,9 +299,9 @@ main (int argc, char **argv)
                 g_error ("Failed to obtain session bus: %s", error->message);
 
         /* We don't escape the name (i.e. we leave any '-' intact). */
-		char const *session_type = g_getenv("XDG_SESSION_TYPE");
-        target = g_strdup_printf ("gnome-session-%s",
-                                  session_type ? session_type : "wayland");// , session_name);
+	char const *session_type = g_getenv("XDG_SESSION_TYPE");
+        target = g_strdup_printf ("gnome-session-%s.%s",
+                                  session_type ? session_type : "wayland", session_name);
 
         /* if (systemd_unit_is_active (ctx.session_bus, target, &error)) */
         /*         g_error ("Session manager is already running!"); */
@@ -298,29 +312,31 @@ main (int argc, char **argv)
 
         g_message ("Starting GNOME session target: %s", target);
 
+	//if (strcmp(session_name, "gnome-login") == 0)
+	//	start_gnome_pls(&error);
         if (!openrc_start_unit (target, &error))
                 g_error ("Failed to start unit %s: %s", target, error->message);
 		
-		char const *fifo_path = "/tmp/gnome-shell.pid";
+	//	char const *fifo_path = "/tmp/gnome-shell.pid";
         /* fifo_path = g_build_filename (g_get_user_runtime_dir (), */
         /*                               "gnome-session-leader-fifo", */
         /*                               NULL); */
-        if (mkfifo (fifo_path, 0666) < 0 && errno != EEXIST)
-                g_warning ("Failed to create leader FIFO: %m");
-		//fifo_path = g_strdup_printf("gnome-session-%s.
+        /* if (mkfifo (fifo_path, 0666) < 0 && errno != EEXIST) */
+        /*         g_warning ("Failed to create leader FIFO: %m"); */
+	/* 	//fifo_path = g_strdup_printf("gnome-session-%s. */
 
-        ctx.fifo_fd = g_open (fifo_path, O_WRONLY | O_CLOEXEC, 0666);
-        if (ctx.fifo_fd < 0)
-                g_error ("Failed to watch systemd session: open failed: %m");
-        if (fstat (ctx.fifo_fd, &statbuf) < 0)
-                g_error ("Failed to watch systemd session: fstat failed: %m");
-        else if (!(statbuf.st_mode & S_IFIFO))
-                g_error ("Failed to watch systemd session: FD is not a FIFO");
+        /* ctx.fifo_fd = g_open (fifo_path, O_WRONLY | O_CLOEXEC, 0666); */
+        /* if (ctx.fifo_fd < 0) */
+        /*         g_error ("Failed to watch systemd session: open failed: %m"); */
+        /* if (fstat (ctx.fifo_fd, &statbuf) < 0) */
+        /*         g_error ("Failed to watch systemd session: fstat failed: %m"); */
+        /* else if (!(statbuf.st_mode & S_IFIFO)) */
+        /*         g_error ("Failed to watch systemd session: FD is not a FIFO"); */
 
-        g_unix_fd_add (ctx.fifo_fd, G_IO_HUP, (GUnixFDSourceFunc) monitor_hangup_cb, &ctx);
-        g_unix_signal_add (SIGHUP, leader_term_or_int_signal_cb, &ctx);
-        g_unix_signal_add (SIGTERM, leader_term_or_int_signal_cb, &ctx);
-        g_unix_signal_add (SIGINT, leader_term_or_int_signal_cb, &ctx);
+        /* g_unix_fd_add (ctx.fifo_fd, G_IO_HUP, (GUnixFDSourceFunc) monitor_hangup_cb, &ctx); */
+        /* g_unix_signal_add (SIGHUP, leader_term_or_int_signal_cb, &ctx); */
+        /* g_unix_signal_add (SIGTERM, leader_term_or_int_signal_cb, &ctx); */
+        /* g_unix_signal_add (SIGINT, leader_term_or_int_signal_cb, &ctx); */
 
         g_debug ("Waiting for session to shutdown");
         g_main_loop_run (ctx.loop);

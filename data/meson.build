@@ -132,6 +132,7 @@ else
     'openrc/gnome-session-tty',
     'openrc/gnome-session-wayland',
     'openrc/gnome-shell',
+	'openrc/gnome-shell.gnome-login',
     'openrc/gnome-settings-daemon',
     'openrc/gnome-session-dbus',
 
@@ -164,6 +165,37 @@ else
   install_data(
     openrc_target,
     install_dir: '/etc/user/init.d'
+  )
+  
+  gnome_sessions = [ 'gnome', 'gnome-login', 'gnome-initial-setup' ]
+  targets = [
+    'gnome-session-wayland',
+    'gnome-session',
+    'gnome-session-dbus',
+  ]
+  
+  mapped_target = []
+  mapped_target_rename = []
+  
+  foreach session : gnome_sessions
+    foreach target : targets
+      mapped_target += 'openrc/' + target
+      mapped_target_rename += target + '.' + session
+    endforeach
+    # HACK done above, it seems like symlinks break stuff with openrc
+    #foreach target : targets
+    #  install_symlink(
+    #    target + '--' + session,
+    #    install_dir: '/etc/user/init.d',
+    #    pointing_to: target
+    #  )
+    #endforeach
+  endforeach
+  
+  install_data(
+    mapped_target,
+    install_dir: '/etc/user/init.d',
+    rename: mapped_target_rename
   )
 
   # Install resource limits that are applied to GNOME-launched apps

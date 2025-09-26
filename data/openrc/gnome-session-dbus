@@ -2,10 +2,12 @@
 
 description="GNOME session dbus daemon"
 
+_session=$(echo "${RC_SVCNAME}" | sed -e "s|.*\.||g")
+
 start() {
 	ebegin "Starting ${description}"
 	if [ -f /usr/local/libexec/gnome-session-service ]; then
-		start-stop-daemon --start --exec /usr/local/libexec/gnome-session-service -b -- --session=gnome 
+		start-stop-daemon --start --exec /usr/local/libexec/gnome-session-service -b -- --session="${_session}"
 	else
 		echo nope
 		#/usr/libexec/gnome-session-service --session=gnome

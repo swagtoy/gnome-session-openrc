@@ -2,8 +2,15 @@
 
 description="GNOME Session (base)"
 
+_session=$(echo "${RC_SVCNAME}" | sed -e "s|.*\.||g")
+
 depend() {
-	need gnome-shell
+	need dbus
+	if [ "${_session}" == "gnome-login" ]; then
+		need gnome-shell.gnome-login
+	else
+		need gnome-shell
+	fi
 	need gnome-settings-daemon
-	need gnome-session-dbus
+	need "gnome-session-dbus.${_session}"
 }

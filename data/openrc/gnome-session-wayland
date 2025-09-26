@@ -2,6 +2,8 @@
 
 description="GNOME Session (wayland)"
 
+_session=$(echo "${RC_SVCNAME}" | sed -e "s|.*\.||g")
+
 depend() {
-	need gnome-session
+	need "gnome-session.${_session}"
 }
