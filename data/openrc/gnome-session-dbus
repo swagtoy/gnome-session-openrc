@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 
-_session=$(echo "${RC_SVCNAME}" | sed -e "s|.*\.||g")
+_session="${RC_SVCNAME#*.}"
 
 supervisor=supervise-daemon
 description="GNOME session dbus daemon"
@@ -8,21 +8,3 @@ command="/usr/libexec/gnome-session-service"
 comand_args='--session="${_session}"'
 command_background="true"
 pidfile="${XDG_RUNTIME_DIR}/gnome-session-dbus.pid"
-
-# start() {
-# 	ebegin "Starting ${description}"
-# 	if [ -f /usr/libexec/gnome-session-service ]; then
-# 		start-stop-daemon --start --exec /usr/local/libexec/gnome-session-service -b -- --session="${_session}"
-# 	else
-# 		echo nope
-# 		#/usr/libexec/gnome-session-service --session=gnome
-# 	fi
-# 	eend $?
-# }
-
-# stop() {
-# 	ebegin "Stopping ${description}"
-# 	# hack
-# 	kill -15 `pgrep -f gnome-session-service` || true
-# 	eend $?
-# }
