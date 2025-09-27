@@ -302,20 +302,28 @@ main (int argc, char **argv)
 
         /* We don't escape the name (i.e. we leave any '-' intact). */
 	char const *session_type = g_getenv("XDG_SESSION_TYPE");
+        /* XDG_SESSION_TYPE from the console is TTY which isn't a service and doesn't make
+            too much sense anyway */
+        if (session_type && strcmp(session_type, "tty") == 0)
+                session_type = "wayland"; 
         target = g_strdup_printf ("gnome-session-%s.%s",
                                   session_type ? session_type : "wayland", session_name);
 
-        /* if (systemd_unit_is_active (ctx.session_bus, target, &error)) */
-        /*         g_error ("Session manager is already running!"); */
-        /* if (error != NULL) */
-        /*         g_warning ("Failed to check if unit %s is active: %s", */
-        /*                    target, error->message); */
-        /* g_clear_error (&error); */
+        RC_SERVICE state = rc_service_state(target);
+        switch (state)
+        {
+        case RC_SERVICE_STARTED:
+        case RC_SERVICE_FAILED:
+                g_error("Service manager is already running!");
+                break;
+        case RC_SERVICE_STOPPED:
+                break;
+        default:
+                g_debug("Service in state: %d", state);
+        }
 
         g_message ("Starting GNOME session target: %s", target);
 
-	//if (strcmp(session_name, "gnome-login") == 0)
-	//	start_gnome_pls(&error);
         if (!openrc_start_unit (target, &error))
                 g_error ("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
 		
