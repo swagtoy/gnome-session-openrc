@@ -23,6 +23,7 @@
 #include <glib-unix.h>
 #include <gio/gio.h>
 #include <sys/syslog.h>
+#include <rc.h>
 
 #include "gsm-util.h"
 
@@ -52,27 +53,26 @@ leader_clear (Leader *ctx)
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC (Leader, leader_clear);
 
 static gboolean
-systemd_unit_is_active (GDBusConnection  *connection,
-                        const char       *unit,
-                        GError          **error)
-{
-	return FALSE;
-}
-
-static gboolean
 openrc_unit_action (const char       *unit,
                     const char       *action,
                     GError          **error)
 {
-	g_autofree char *str = g_strdup_printf("/etc/user/init.d/%s -U %s", unit, action);
-	return g_spawn_command_line_async(str, error);
-}
-
-static gboolean
-start_gnome_pls (
-                 GError          **error)
-{
-	return g_spawn_command_line_async("/usr/bin/gnome-shell --wayland", error);
+        g_autofree char *service = rc_service_resolve(unit);
+        if (!service)
+        {
+                g_debug("Couldn't resolve service '%s'", unit);
+                return FALSE;
+        }
+        gchar *argv[] = { service, "-U", action, NULL };
+        gboolean res = g_spawn_async(NULL,
+                                     argv,
+                                     NULL,
+                                     G_SPAWN_DEFAULT,
+                                     NULL,
+                                     NULL,
+                                     NULL,
+                                     error);
+        return res;
 }
 
 static gboolean
@@ -276,7 +276,9 @@ main (int argc, char **argv)
         g_autofree char *target = NULL;
         //g_autofree char *fifo_path = NULL;
         struct stat statbuf;
-
+        
+        rc_set_user();
+        
         if (argc < 2)
             g_error ("No session name was specified");
         session_name = argv[1];
@@ -315,7 +317,7 @@ main (int argc, char **argv)
 	//if (strcmp(session_name, "gnome-login") == 0)
 	//	start_gnome_pls(&error);
         if (!openrc_start_unit (target, &error))
-                g_error ("Failed to start unit %s: %s", target, error->message);
+                g_error ("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
 		
 	//	char const *fifo_path = "/tmp/gnome-shell.pid";
         /* fifo_path = g_build_filename (g_get_user_runtime_dir (), */

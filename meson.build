@@ -106,6 +106,11 @@ else
   ]
 endif
 
+libopenrc_dep = dependency('openrc', required: false)
+if libopenrc_dep.found()
+  session_bin_deps += libopenrc_dep
+endif
+
 if libsystemd_dep.found()
   systemd_userunitdir = get_option('systemduserunitdir')
   if systemd_userunitdir == ''

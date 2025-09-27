@@ -22,5 +22,5 @@ depend() {
 	need gsd-usb-protection      
 #	need gsd-wacom               
 #	need gsd-wwan                
-	need gsd-xsettings           
+#########	need gsd-xsettings           
 }
