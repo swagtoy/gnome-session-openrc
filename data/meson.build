@@ -188,31 +188,16 @@ else
     'gnome-session-dbus',
   ]
   
-  # Since we can't do symlinks yet, we have to create copies of the symlinked services
-  mapped_target = []
-  mapped_target_rename = []
-  
   foreach session : gnome_sessions
     foreach target : targets
-      mapped_target += 'openrc/' + target
-      mapped_target_rename += target + '.' + session
+      install_symlink(
+        target + '.' + session,
+        install_dir: '/etc/user/init.d',
+        pointing_to: target
+      )
     endforeach
-    # HACK done above, it seems like symlinks break stuff with openrc
-    #foreach target : targets
-    #  install_symlink(
-    #    target + '--' + session,
-    #    install_dir: '/etc/user/init.d',
-    #    pointing_to: target
-    #  )
-    #endforeach
   endforeach
   
-  install_data(
-    mapped_target,
-    install_dir: '/etc/user/init.d',
-    rename: mapped_target_rename
-  )
-
   # Install resource limits that are applied to GNOME-launched apps
 
   # install_data(
