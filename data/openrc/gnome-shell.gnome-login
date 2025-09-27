@@ -1,5 +1,6 @@
 #!/sbin/openrc-run
 
+supervisor=supervise-daemon
 description="GNOME Shell (login)"
 XDG_CURRENT_DESKTOP=GNOME
 export XDG_CURRENT_DESKTOP

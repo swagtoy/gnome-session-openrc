@@ -1,5 +1,6 @@
 #!/sbin/openrc-run
 
+supervisor=supervise-daemon
 description="${RC_SVCNAME} daemon"
 command="/usr/libexec/${RC_SVCNAME}"
 command_args=""

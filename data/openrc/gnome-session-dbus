@@ -2,6 +2,7 @@
 
 _session=$(echo "${RC_SVCNAME}" | sed -e "s|.*\.||g")
 
+supervisor=supervise-daemon
 description="GNOME session dbus daemon"
 command="/usr/libexec/gnome-session-service"
 comand_args='--session="${_session}"'
