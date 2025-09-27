@@ -132,28 +132,10 @@ else
     'openrc/gnome-session-tty',
     'openrc/gnome-session-wayland',
     'openrc/gnome-shell',
-	'openrc/gnome-shell.gnome-login',
+    'openrc/gnome-shell.gnome-login',
     'openrc/gnome-settings-daemon',
     'openrc/gnome-session-dbus',
-
-    # gnome settings daemon
-    'openrc/gsd-a11y-settings',
-    'openrc/gsd-color',
-    'openrc/gsd-datetime',
-    'openrc/gsd-housekeeping',
-    'openrc/gsd-keyboard',
-    'openrc/gsd-media-keys',
-    'openrc/gsd-power',
-    'openrc/gsd-print-notifications',
-    'openrc/gsd-rfkill',
-    'openrc/gsd-screensaver-proxy',
-    'openrc/gsd-sharing',
-#    'openrc/gsd-smartcard',
-    'openrc/gsd-sound',
-    'openrc/gsd-usb-protection',
-#    'openrc/gsd-wacom',
-#    'openrc/gsd-wwan',
-    'openrc/gsd-xsettings',
+    'openrc/gsd',
   ]
   # if have_x11
   #   openrc_target += [
@@ -161,12 +143,44 @@ else
   #     'openrc/gnome-session-x11.target',
   #   ]
   # endif
+  
+  openrc_gsd = [
+    'gsd-a11y-settings',
+    'gsd-color',
+    'gsd-datetime',
+    'gsd-housekeeping',
+    'gsd-keyboard',
+    'gsd-media-keys',
+    'gsd-power',
+    'gsd-print-notifications',
+    'gsd-rfkill',
+    'gsd-screensaver-proxy',
+    'gsd-sharing',
+    'gsd-smartcard',
+    'gsd-sound',
+    'gsd-usb-protection',
+    'gsd-wacom',
+    'gsd-wwan',
+    'gsd-xsettings',
+  ]
 
+  # Install the primary services
+  # TODO installs unneeded duplicates since we can't symlink due to that OpenRC bug
   install_data(
     openrc_target,
     install_dir: '/etc/user/init.d'
   )
   
+  # Create symlinks of gsd daemons
+  foreach gsd : openrc_gsd
+    install_symlink(
+      gsd,
+      install_dir: '/etc/user/init.d',
+      pointing_to: 'gsd'
+    )
+  endforeach
+  
+  # Create services like gnome-session.{gnome,gnome-login,...}
   gnome_sessions = [ 'gnome', 'gnome-login', 'gnome-initial-setup' ]
   targets = [
     'gnome-session-wayland',
@@ -174,6 +188,7 @@ else
     'gnome-session-dbus',
   ]
   
+  # Since we can't do symlinks yet, we have to create copies of the symlinked services
   mapped_target = []
   mapped_target_rename = []
   
