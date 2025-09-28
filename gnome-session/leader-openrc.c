@@ -33,6 +33,8 @@ debug_logger(gchar const *log_domain,
              gchar const *message,
              gpointer user_data);
 
+gboolean
+async_run_cmd(gchar** argv, GError **error);
 
 typedef struct {
         GDBusConnection *session_bus;
@@ -52,6 +54,19 @@ leader_clear (Leader *ctx)
 
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC (Leader, leader_clear);
 
+gboolean
+async_run_cmd(gchar** argv, GError **error)
+{
+        return g_spawn_async(NULL,
+                             argv,
+                             NULL,
+                             G_SPAWN_DEFAULT,
+                             NULL,
+                             NULL,
+                             NULL,
+                             error);
+}
+
 static gboolean
 openrc_unit_action (const char       *unit,
                     const char       *action,
@@ -64,14 +79,7 @@ openrc_unit_action (const char       *unit,
                 return FALSE;
         }
         gchar *argv[] = { service, "-U", action, NULL };
-        gboolean res = g_spawn_async(NULL,
-                                     argv,
-                                     NULL,
-                                     G_SPAWN_DEFAULT,
-                                     NULL,
-                                     NULL,
-                                     NULL,
-                                     error);
+        gboolean res = async_run_cmd(argv, error);
         return res;
 }
 
@@ -116,6 +124,7 @@ leader_term_or_int_signal_cb (gpointer data)
         /* Start a shutdown explicitly. */
         //systemd_start_unit (ctx->session_bus, "gnome-session-shutdown.target",
         //                    "replace-irreversibly", NULL);
+        
 
         if (write (ctx->fifo_fd, "S", 1) < 0) {
                 g_warning ("Failed to signal shutdown to monitor: %m");
@@ -274,7 +283,7 @@ main (int argc, char **argv)
         const char *session_name = NULL;
         const char *debug_string = NULL;
         g_autofree char *target = NULL;
-        //g_autofree char *fifo_path = NULL;
+        g_autofree char *fifo_path = NULL;
         struct stat statbuf;
         
         rc_set_user();
@@ -326,6 +335,25 @@ main (int argc, char **argv)
 
         if (!openrc_start_unit (target, &error))
                 g_error ("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
+        
+        fifo_path = g_build_filename (g_get_user_runtime_dir (),
+                                      "gnome-session-leader-fifo",
+                                      NULL);
+        if (mkfifo (fifo_path, 0666) < 0 && errno != EEXIST)
+                g_warning ("Failed to create leader FIFO: %m");
+
+        ctx.fifo_fd = g_open (fifo_path, O_WRONLY | O_CLOEXEC, 0666);
+        if (ctx.fifo_fd < 0)
+                g_error ("Failed to watch systemd session: open failed: %m");
+        if (fstat (ctx.fifo_fd, &statbuf) < 0)
+                g_error ("Failed to watch systemd session: fstat failed: %m");
+        else if (!(statbuf.st_mode & S_IFIFO))
+                g_error ("Failed to watch systemd session: FD is not a FIFO");
+
+        g_unix_fd_add (ctx.fifo_fd, G_IO_HUP, (GUnixFDSourceFunc) monitor_hangup_cb, &ctx);
+        g_unix_signal_add (SIGHUP, leader_term_or_int_signal_cb, &ctx);
+        g_unix_signal_add (SIGTERM, leader_term_or_int_signal_cb, &ctx);
+        g_unix_signal_add (SIGINT, leader_term_or_int_signal_cb, &ctx);
 		
 	//	char const *fifo_path = "/tmp/gnome-shell.pid";
         /* fifo_path = g_build_filename (g_get_user_runtime_dir (), */
