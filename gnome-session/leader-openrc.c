@@ -344,39 +344,17 @@ main (int argc, char **argv)
 
         ctx.fifo_fd = g_open (fifo_path, O_WRONLY | O_CLOEXEC, 0666);
         if (ctx.fifo_fd < 0)
-                g_error ("Failed to watch systemd session: open failed: %m");
+                g_error ("Failed to watch openrc session: open failed: %m");
         if (fstat (ctx.fifo_fd, &statbuf) < 0)
-                g_error ("Failed to watch systemd session: fstat failed: %m");
+                g_error ("Failed to watch openrc session: fstat failed: %m");
         else if (!(statbuf.st_mode & S_IFIFO))
-                g_error ("Failed to watch systemd session: FD is not a FIFO");
+                g_error ("Failed to watch openrc session: FD is not a FIFO");
 
         g_unix_fd_add (ctx.fifo_fd, G_IO_HUP, (GUnixFDSourceFunc) monitor_hangup_cb, &ctx);
         g_unix_signal_add (SIGHUP, leader_term_or_int_signal_cb, &ctx);
         g_unix_signal_add (SIGTERM, leader_term_or_int_signal_cb, &ctx);
         g_unix_signal_add (SIGINT, leader_term_or_int_signal_cb, &ctx);
-		
-	//	char const *fifo_path = "/tmp/gnome-shell.pid";
-        /* fifo_path = g_build_filename (g_get_user_runtime_dir (), */
-        /*                               "gnome-session-leader-fifo", */
-        /*                               NULL); */
-        /* if (mkfifo (fifo_path, 0666) < 0 && errno != EEXIST) */
-        /*         g_warning ("Failed to create leader FIFO: %m"); */
-	/* 	//fifo_path = g_strdup_printf("gnome-session-%s. */
 
-        /* ctx.fifo_fd = g_open (fifo_path, O_WRONLY | O_CLOEXEC, 0666); */
-        /* if (ctx.fifo_fd < 0) */
-        /*         g_error ("Failed to watch systemd session: open failed: %m"); */
-        /* if (fstat (ctx.fifo_fd, &statbuf) < 0) */
-        /*         g_error ("Failed to watch systemd session: fstat failed: %m"); */
-        /* else if (!(statbuf.st_mode & S_IFIFO)) */
-        /*         g_error ("Failed to watch systemd session: FD is not a FIFO"); */
-
-        /* g_unix_fd_add (ctx.fifo_fd, G_IO_HUP, (GUnixFDSourceFunc) monitor_hangup_cb, &ctx); */
-        /* g_unix_signal_add (SIGHUP, leader_term_or_int_signal_cb, &ctx); */
-        /* g_unix_signal_add (SIGTERM, leader_term_or_int_signal_cb, &ctx); */
-        /* g_unix_signal_add (SIGINT, leader_term_or_int_signal_cb, &ctx); */
-
-        g_debug ("Waiting for session to shutdown");
         g_main_loop_run (ctx.loop);
         return 0;
 }
