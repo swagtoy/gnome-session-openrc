@@ -298,12 +298,17 @@ main (int argc, char **argv)
         char const *user = g_getenv("USER");
         if (!user)
                 user = "gdm-greeter"; // :/
-        home_dir = g_strdup_printf("/var/lib/%s", user);
-        
-        // Need to hijack the home to point to /var/lib because /var/run/... gets nuked on each gdm start
-        config_dir = g_strdup_printf("%s/.config", home_dir);
-        g_setenv("XDG_CONFIG_HOME", config_dir, TRUE);
-        g_setenv("HOME", home_dir, TRUE);
+        g_info("User is: %s", user);
+        // strncmp because we also have gdm-greeter-{2,3,4,...}
+        if (strncmp(user, "gdm-greeter", sizeof("gdm-greeter")) == 0)
+        {
+                 home_dir = g_strdup_printf("/var/lib/%s", user);
+
+                 // Need to hijack the home to point to /var/lib because /var/run/... gets nuked on each gdm start
+                 config_dir = g_strdup_printf("%s/.config", home_dir);
+                 g_setenv("XDG_CONFIG_HOME", config_dir, TRUE);
+                 g_setenv("HOME", home_dir, TRUE);
+        }
         
         // Finally, get started
         rc_set_user();
@@ -370,7 +375,7 @@ main (int argc, char **argv)
         if (!async_run_cmd(rl_argv, &error))
                 g_error("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
         
-        // TODO this is now probably wrong since we hijacked /var/run..
+        // TODO this may be wrong for gdm-greeter now
         fifo_path = g_build_filename (g_get_user_runtime_dir (),
                                       "gnome-session-leader-fifo",
                                       NULL);
