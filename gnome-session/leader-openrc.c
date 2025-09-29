@@ -17,6 +17,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
 #include <config.h>
 
 #include <glib.h>
@@ -25,6 +26,7 @@
 #include <sys/syslog.h>
 #include <rc.h>
 
+#include "glib-object.h"
 #include "gsm-util.h"
 
 void
@@ -284,13 +286,38 @@ main (int argc, char **argv)
         const char *debug_string = NULL;
         g_autofree char *target = NULL;
         g_autofree char *fifo_path = NULL;
+        g_autofree char *home_dir = NULL;
+        g_autofree char *config_dir = NULL;
         struct stat statbuf;
-        
-        rc_set_user();
         
         if (argc < 2)
             g_error ("No session name was specified");
         session_name = argv[1];
+        
+        // probably not rely on this
+        char const *user = g_getenv("USER");
+        if (!user)
+                user = "gdm-greeter"; // :/
+        home_dir = g_strdup_printf("/var/lib/%s", user);
+        
+        // Need to hijack the home to point to /var/lib because /var/run/... gets nuked on each gdm start
+        config_dir = g_strdup_printf("%s/.config", home_dir);
+        g_setenv("XDG_CONFIG_HOME", config_dir, TRUE);
+        g_setenv("HOME", home_dir, TRUE);
+        
+        // Finally, get started
+        rc_set_user();
+        
+	char const *session_type = g_getenv("XDG_SESSION_TYPE");
+        char const *home         = g_getenv("HOME");
+        g_info("XDG_RUNTIME_DIR: %s", g_getenv("XDG_RUNTIME_DIR"));
+        
+        // TODO what about custom XDG config directory?
+        g_autofree char *gnome_runlevel_dir = g_strdup_printf("%s/.config/rc/runlevels/gnome-session", home);
+        if (!g_mkdir_with_parents(gnome_runlevel_dir, 0755))
+                g_info("Directory exists. OK");
+        
+        g_debug("runlevel dir: %s", gnome_runlevel_dir);
 
         debug_string = g_getenv ("GNOME_SESSION_DEBUG");
         if (debug_string != NULL)
@@ -298,19 +325,12 @@ main (int argc, char **argv)
         g_log_set_debug_enabled(TRUE);
         g_debug("Hi! from leader-openrc.");
 
-        //gsm_util_export_user_environment (&error);
-        //if (error)
-        //        g_warning ("Failed to upload environment to systemd: %s", error->message);
-        //g_clear_error (&error);
-
         ctx.loop = g_main_loop_new (NULL, TRUE);
 
         ctx.session_bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
         if (ctx.session_bus == NULL)
                 g_error ("Failed to obtain session bus: %s", error->message);
 
-        /* We don't escape the name (i.e. we leave any '-' intact). */
-	char const *session_type = g_getenv("XDG_SESSION_TYPE");
         /* XDG_SESSION_TYPE from the console is TTY which isn't a service and doesn't make
             too much sense anyway */
         if (session_type && strcmp(session_type, "tty") == 0)
@@ -330,12 +350,27 @@ main (int argc, char **argv)
         default:
                 g_debug("Service in state: %d", state);
         }
+        
+        
+        //if (!rc_runlevel_stack("gnome-session", "default"))
+        //        g_info("Couldn't set runlevel stack");
+        if (!rc_runlevel_exists("gnome-session"))
+                g_info("No runlevel? No good!"); // next function will fail now, but librc error reporting sucks so we check this specifically
+        if (!rc_service_add("gnome-session", target))
+        {
+                g_info("Couldn't add service to gnome-session runlevel: %s", strerror(errno));
+        }
 
         g_message ("Starting GNOME session target: %s", target);
 
-        if (!openrc_start_unit (target, &error))
-                g_error ("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
+        //if (!openrc_start_unit (target, &error))
+        //        g_error ("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
+        // no
+        gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "gnome-session", NULL };
+        if (!async_run_cmd(rl_argv, &error))
+                g_error("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
         
+        // TODO this is now probably wrong since we hijacked /var/run..
         fifo_path = g_build_filename (g_get_user_runtime_dir (),
                                       "gnome-session-leader-fifo",
                                       NULL);
