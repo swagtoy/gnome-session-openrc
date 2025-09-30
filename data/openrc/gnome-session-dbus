@@ -5,6 +5,6 @@ dbus_session="${RC_SVCNAME#*.}"
 supervisor=supervise-daemon
 description="GNOME session dbus daemon"
 command="/usr/libexec/gnome-session-service"
-comand_args='--session="${dbus_session}"'
+command_args='--session="${dbus_session}"'
 command_background="true"
-pidfile="${XDG_RUNTIME_DIR}/gnome-session-dbus.pid"
+pidfile="${XDG_RUNTIME_DIR}/gnome-session-dbus-${dbus_session}.pid"
