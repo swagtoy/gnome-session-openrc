@@ -357,8 +357,8 @@ main (int argc, char **argv)
         }
         
         
-        //if (!rc_runlevel_stack("gnome-session", "default"))
-        //        g_info("Couldn't set runlevel stack");
+        if (!rc_runlevel_stack("gnome-session", "default"))
+                g_info("Couldn't set runlevel stack");
         if (!rc_runlevel_exists("gnome-session"))
                 g_info("No runlevel? No good!"); // next function will fail now, but librc error reporting sucks so we check this specifically
         if (!rc_service_add("gnome-session", target))
