@@ -14,7 +14,6 @@ command_args="--wayland"
 pidfile="${XDG_RUNTIME_DIR}/gnome-shell.pid"
 
 start_post() {
-	einfo "Something"
-	sleep 4
+	sleep 1
 	/usr/libexec/gnome-session-ctl --signal-init
 }
