@@ -1,0 +1,6 @@
+#!/sbin/openrc-run
+
+description="Gnome session initialize signal"
+command="/usr/libexec/gnome-session-ctl"
+command_args="--signal-init"
+pidfile="${XDG_RUNTIME_DIR}/gnome-shell-init.pid"

@@ -15,3 +15,4 @@ depend() {
 	need gnome-settings-daemon
 	need "gnome-session-dbus.${gnome_session}"
 }
+
