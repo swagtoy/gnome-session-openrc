@@ -36,6 +36,8 @@
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 
+#include <rc.h>
+
 #define GSM_SERVICE_DBUS   "org.gnome.SessionManager"
 #define GSM_PATH_DBUS      "/org/gnome/SessionManager"
 #define GSM_INTERFACE_DBUS "org.gnome.SessionManager"
@@ -43,6 +45,20 @@
 #define SYSTEMD_DBUS            "org.freedesktop.systemd1"
 #define SYSTEMD_PATH_DBUS       "/org/freedesktop/systemd1"
 #define SYSTEMD_INTERFACE_DBUS  "org.freedesktop.systemd1.Manager"
+
+static gboolean
+async_run_cmd(gchar** argv, GError **error)
+{
+        return g_spawn_async(NULL,
+                             argv,
+                             NULL,
+                             G_SPAWN_DEFAULT,
+                             NULL,
+                             NULL,
+                             NULL,
+                             error);
+}
+
 
 static GDBusConnection *
 get_session_bus (void)
@@ -283,13 +299,18 @@ main (int argc, char *argv[])
         }
 
         sd_notify (0, "READY=1");
+        
+        
 
         if (opt_signal_init) {
                 do_signal_init ();
         } else if (opt_restart_dbus) {
                 do_restart_dbus ();
         } else if (opt_shutdown) {
-                do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly");
+                gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "default", NULL };
+                if (!async_run_cmd(rl_argv, &error))
+                        g_error("Failed to start unit");
+                /* do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly"); */
         } else if (opt_monitor) {
                 do_monitor_leader ();
                 do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly");
