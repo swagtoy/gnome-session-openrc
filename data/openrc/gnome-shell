@@ -12,8 +12,3 @@ command="/usr/bin/gnome-shell"
 command_args="--wayland"
 #command_background="true"
 pidfile="${XDG_RUNTIME_DIR}/gnome-shell.pid"
-
-start_post() {
-	sleep 1
-	/usr/libexec/gnome-session-ctl --signal-init
-}

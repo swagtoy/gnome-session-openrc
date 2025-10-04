@@ -1,0 +1,9 @@
+#!/sbin/openrc-run
+
+# Note: This shouldn't be a dependency of any service! It is started
+#   by gnome-session (gsm-manager.c)
+
+description="Gnome session init signal"
+command="/usr/libexec/gnome-session-ctl"
+command_args="--signal-init"
+pidfile="${XDG_RUNTIME_DIR}/gnome-session-init.pid" #?
