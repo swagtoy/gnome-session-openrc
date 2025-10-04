@@ -132,6 +132,7 @@ else
     'openrc/gnome-session-tty',
     'openrc/gnome-session-wayland',
     'openrc/gnome-shell',
+    'openrc/gnome-session-init',
     'openrc/gnome-shell.gnome-login',
     'openrc/gnome-settings-daemon',
     'openrc/gnome-session-dbus',
