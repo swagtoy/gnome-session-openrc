@@ -2,7 +2,7 @@
 
 dbus_session="${RC_SVCNAME#*.}"
 
-supervisor=supervise-daemon
+# supervisor=supervise-daemon
 description="GNOME session dbus daemon"
 command="/usr/libexec/gnome-session-service"
 command_args='--session="${dbus_session}"'
