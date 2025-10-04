@@ -163,6 +163,35 @@ gsm_manager_error_quark (void)
 }
 
 static gboolean
+async_run_cmd(gchar** argv, GError **error)
+{
+        return g_spawn_async(NULL,
+                             argv,
+                             NULL,
+                             G_SPAWN_DEFAULT,
+                             NULL,
+                             NULL,
+                             NULL,
+                             error);
+}
+
+static gboolean
+openrc_unit_action (const char       *unit,
+                    const char       *action,
+                    GError          **error)
+{
+        g_autofree char *service = rc_service_resolve(unit);
+        if (!service)
+        {
+                g_debug("Couldn't resolve service '%s'", unit);
+                return FALSE;
+        }
+        gchar *argv[] = { service, "-U", action, NULL };
+        gboolean res = async_run_cmd(argv, error);
+        return res;
+}
+
+static gboolean
 start_app_or_warn (GsmManager *manager,
                    GsmApp     *app)
 {
@@ -1293,6 +1322,11 @@ gsm_manager_dispose (GObject *object)
         g_clear_object (&manager->connection);
 
         G_OBJECT_CLASS (gsm_manager_parent_class)->dispose (object);
+		
+		g_debug ("Bye bye!");
+		
+		if (openrc_unit_action("gnome-session-shutdown", "start", NULL))
+			g_warning ("Failed to start gnome-session-shutdown.");
 }
 
 static void

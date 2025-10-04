@@ -1,0 +1,8 @@
+#!/sbin/openrc-run
+
+# supervisor=supervise-daemon
+description="Gnome session monitor"
+command="/usr/libexec/gnome-session-ctl"
+command_args="--monitor"
+command_background="true"
+pidfile="${XDG_RUNTIME_DIR}/gnome-session-monitor.pid" #?

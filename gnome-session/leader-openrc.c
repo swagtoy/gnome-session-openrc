@@ -29,15 +29,6 @@
 #include "glib-object.h"
 #include "gsm-util.h"
 
-void
-debug_logger(gchar const *log_domain,
-             GLogLevelFlags log_level,
-             gchar const *message,
-             gpointer user_data);
-
-gboolean
-async_run_cmd(gchar** argv, GError **error);
-
 typedef struct {
         GDBusConnection *session_bus;
         GMainLoop *loop;
@@ -56,7 +47,7 @@ leader_clear (Leader *ctx)
 
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC (Leader, leader_clear);
 
-gboolean
+static gboolean
 async_run_cmd(gchar** argv, GError **error)
 {
         return g_spawn_async(NULL,
@@ -231,7 +222,7 @@ monitor_hangup_cb (int          fd,
         return G_SOURCE_REMOVE;
 }
 
-void
+static void
 debug_logger(gchar const *log_domain,
              GLogLevelFlags log_level,
              gchar const *message,

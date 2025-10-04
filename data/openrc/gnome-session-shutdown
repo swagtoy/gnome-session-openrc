@@ -1,0 +1,7 @@
+#!/sbin/openrc-run
+
+# supervisor=supervise-daemon
+description="Gnome session shutdown"
+command="/usr/libexec/gnome-session-ctl"
+command_args="--shutdown"
+pidfile="${XDG_RUNTIME_DIR}/gnome-session-shutdown.pid" #?

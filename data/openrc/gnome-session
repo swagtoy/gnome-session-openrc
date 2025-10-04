@@ -14,6 +14,7 @@ depend() {
 	fi
 	need gnome-settings-daemon
 	need "gnome-session-dbus.${gnome_session}"
+	need gnome-session-monitor
 	need gnome-session-init
 }
 

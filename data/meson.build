@@ -133,6 +133,8 @@ else
     'openrc/gnome-session-wayland',
     'openrc/gnome-shell',
     'openrc/gnome-session-init',
+    'openrc/gnome-session-shutdown',
+    'openrc/gnome-session-monitor',
     'openrc/gnome-shell.gnome-login',
     'openrc/gnome-settings-daemon',
     'openrc/gnome-session-dbus',
