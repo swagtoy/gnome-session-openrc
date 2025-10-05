@@ -173,5 +173,11 @@ summary_dirs = {
   'pkgdatadir': session_pkgdatadir,
 }
 
+summary_vars = {
+  'Use OpenRC': use_openrc,
+  'Have X11': have_x11,
+}
+
 summary(summary_dirs, section: 'Directories')
 summary(summary_options, section: 'Build Options')
+summary(summary_vars, section: 'Build-time Variables')
