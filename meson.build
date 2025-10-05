@@ -21,6 +21,7 @@ session_pkgdatadir = join_paths(session_datadir, meson.project_name())
 cc = meson.get_compiler('c')
 
 have_x11 = get_option('x11')
+
 config_h = configuration_data()
 
 # defines
@@ -119,6 +120,10 @@ if libsystemd_dep.found()
                                                    pkgconfig_define: ['prefix', session_prefix])
   endif
 endif
+
+use_openrc = not libsystemd_dep.found() and libopenrc_dep.found()
+
+config_h.set('USE_OPENRC', use_openrc)
 
 configure_file(
   output: 'config.h',

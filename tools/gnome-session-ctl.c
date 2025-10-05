@@ -36,7 +36,9 @@
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 
-#include <rc.h>
+#ifdef USE_OPENRC
+#       include <rc.h>
+#endif
 
 #define GSM_SERVICE_DBUS   "org.gnome.SessionManager"
 #define GSM_PATH_DBUS      "/org/gnome/SessionManager"
@@ -46,6 +48,7 @@
 #define SYSTEMD_PATH_DBUS       "/org/freedesktop/systemd1"
 #define SYSTEMD_INTERFACE_DBUS  "org.freedesktop.systemd1.Manager"
 
+#ifdef USE_OPENRC
 static gboolean
 async_run_cmd(gchar** argv, GError **error)
 {
@@ -58,7 +61,7 @@ async_run_cmd(gchar** argv, GError **error)
                              NULL,
                              error);
 }
-
+#endif
 
 static GDBusConnection *
 get_session_bus (void)
@@ -260,11 +263,13 @@ main (int argc, char *argv[])
         int     conflicting_options;
         GOptionContext *ctx;
         static const GOptionEntry options[] = {
-                { "shutdown", '\0', 0, G_OPTION_ARG_NONE, &opt_shutdown, N_("Start gnome-session-shutdown.target"), NULL },
-                { "monitor", '\0', 0, G_OPTION_ARG_NONE, &opt_monitor, N_("Start gnome-session-shutdown.target when receiving EOF or a single byte on stdin"), NULL },
+                { "shutdown", '\0', 0, G_OPTION_ARG_NONE, &opt_shutdown, N_("Start gnome-session-shutdown service"), NULL },
+                { "monitor", '\0', 0, G_OPTION_ARG_NONE, &opt_monitor, N_("Start gnome-session-shutdown service when receiving EOF or a single byte on stdin"), NULL },
                 { "signal-init", '\0', 0, G_OPTION_ARG_NONE, &opt_signal_init, N_("Signal initialization done to gnome-session"), NULL },
-                { "restart-dbus", '\0', 0, G_OPTION_ARG_NONE, &opt_restart_dbus, N_("Restart dbus.service if it is running"), NULL },
-                { "exec-stop-check", '\0', 0, G_OPTION_ARG_NONE, &opt_exec_stop_check, N_("Run from ExecStopPost to start gnome-session-shutdown.target on service failure"), NULL },
+#ifndef USE_OPENRC
+                { "restart-dbus", '\0', 0, G_OPTION_ARG_NONE, &opt_restart_dbus, N_("Restart dbus service if it is running"), NULL },
+                { "exec-stop-check", '\0', 0, G_OPTION_ARG_NONE, &opt_exec_stop_check, N_("Run from ExecStopPost to start gnome-session-shutdown service on service failure"), NULL },
+#endif
                 { NULL },
         };
 
@@ -299,21 +304,25 @@ main (int argc, char *argv[])
         }
 
         sd_notify (0, "READY=1");
-        
-        
+
 
         if (opt_signal_init) {
                 do_signal_init ();
         } else if (opt_restart_dbus) {
                 do_restart_dbus ();
         } else if (opt_shutdown) {
+#ifdef USE_OPENRC
                 gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "default", NULL };
                 if (!async_run_cmd(rl_argv, &error))
                         g_error("Failed to start unit");
-                /* do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly"); */
+#else
+                do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly");
+#endif
         } else if (opt_monitor) {
                 do_monitor_leader ();
+#ifndef USE_OPENRC
                 do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly");
+#endif
         } else if (opt_exec_stop_check) {
                 /* Start failed target if the restart limit was hit */
                 if (g_strcmp0 ("start-limit-hit", g_getenv ("SERVICE_RESULT")) == 0) {

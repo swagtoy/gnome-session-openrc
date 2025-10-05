@@ -37,7 +37,9 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 
-#include <rc.h>
+#ifdef USE_OPENRC
+#       include <rc.h>
+#endif
 
 #include "gsm-manager.h"
 #include "org.gnome.SessionManager.h"
@@ -162,6 +164,7 @@ gsm_manager_error_quark (void)
         return quark_volatile;
 }
 
+#ifdef USE_OPENRC
 static gboolean
 async_run_cmd(gchar** argv, GError **error)
 {
@@ -190,6 +193,7 @@ openrc_unit_action (const char       *unit,
         gboolean res = async_run_cmd(argv, error);
         return res;
 }
+#endif
 
 static gboolean
 start_app_or_warn (GsmManager *manager,
@@ -808,25 +812,8 @@ start_phase (GsmManager *manager)
 
         switch (manager->phase) {
         case GSM_MANAGER_PHASE_INITIALIZATION:
-                /* g_autofree char *service = rc_service_resolve("gnome-session-init"); */
-                /* if (!service) */
-                /* { */
-                /*         g_debug("Couldn't resolve session \"gnome-session-init\"."); */
-                /*         goto out; */
-                /* } */
                 sd_notify (0, "READY=1\nSTATUS=Waiting for session to start");
-                
-                /* gchar *argv[] = { service, "-U", "start", NULL }; */
-                /* g_spawn_async(NULL, */
-                /*               argv, */
-                /*               NULL, */
-                /*               G_SPAWN_DEFAULT, */
-                /*               NULL, */
-                /*               NULL, */
-                /*               NULL, */
-                /*               NULL); */
-                /* } */
-out:            break;
+                break;
         case GSM_MANAGER_PHASE_APPLICATION:
                 sd_notify (0, "STATUS=Starting applications");
                 gsm_exported_manager_emit_session_running (manager->skeleton);
@@ -1322,11 +1309,13 @@ gsm_manager_dispose (GObject *object)
         g_clear_object (&manager->connection);
 
         G_OBJECT_CLASS (gsm_manager_parent_class)->dispose (object);
-		
-		g_debug ("Bye bye!");
-		
-		if (openrc_unit_action("gnome-session-shutdown", "start", NULL))
-			g_warning ("Failed to start gnome-session-shutdown.");
+
+#ifdef USE_OPENRC
+	g_debug ("Starting gnome-session-shutdown");
+
+	if (openrc_unit_action ("gnome-session-shutdown", "start", NULL))
+                g_warning ("Failed to start gnome-session-shutdown.");
+#endif
 }
 
 static void

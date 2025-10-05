@@ -20,9 +20,14 @@ executable(
 )
 
 sources = files(
-    'gsm-util.c',
-    'leader-openrc.c',
+    'gsm-util.c'
 )
+
+if use_openrc
+  sources += files('leader-openrc.c')
+else
+  sources += files('leader-systemd.c')
+endif
 
 executable(
   meson.project_name() + '-init-worker',
