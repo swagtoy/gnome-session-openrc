@@ -129,13 +129,15 @@ if is_variable('systemd_userunitdir')
 else
   openrc_target = [
     'openrc/gnome-session',
-    'openrc/gnome-session-tty',
     'openrc/gnome-session-wayland',
-    'openrc/gnome-shell',
+    'openrc/gnome-session-x11',
+    'openrc/gnome-shell-wayland',
+    'openrc/gnome-shell-x11',
+    'openrc/gnome-shell-wayland.gnome-login',
+    'openrc/gnome-shell-x11.gnome-login',
     'openrc/gnome-session-init',
     'openrc/gnome-session-shutdown',
     'openrc/gnome-session-monitor',
-    'openrc/gnome-shell.gnome-login',
     'openrc/gnome-settings-daemon',
     'openrc/gnome-session-dbus',
     'openrc/gsd',
@@ -187,6 +189,7 @@ else
   gnome_sessions = [ 'gnome', 'gnome-login', 'gnome-initial-setup' ]
   targets = [
     'gnome-session-wayland',
+    'gnome-session-x11',
     'gnome-session',
     'gnome-session-dbus',
   ]

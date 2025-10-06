@@ -7,11 +7,6 @@ gnome_session="${RC_SVCNAME#*.}"
 
 depend() {
 	need dbus
-	if [ "${gnome_session}" = "gnome-login" ]; then
-		need gnome-shell.gnome-login
-	else
-		need gnome-shell
-	fi
 	need gnome-settings-daemon
 	need "gnome-session-dbus.${gnome_session}"
 	need gnome-session-monitor
