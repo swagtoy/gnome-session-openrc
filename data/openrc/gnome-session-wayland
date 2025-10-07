@@ -1,6 +1,8 @@
 #!/sbin/openrc-run
 
 description="GNOME Session (wayland)"
+output_logger="logger"
+error_logger="logger"
 
 _session="${RC_SVCNAME#*.}"
 

@@ -2,6 +2,8 @@
 
 supervisor=supervise-daemon
 description="GNOME Session (base)"
+output_logger="logger"
+error_logger="logger"
 
 gnome_session="${RC_SVCNAME#*.}"
 
