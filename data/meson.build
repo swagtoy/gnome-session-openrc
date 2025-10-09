@@ -128,7 +128,7 @@ if is_variable('systemd_userunitdir')
   )
 else
   openrc_target = [
-    'openrc/gnome-session',
+    # 'openrc/gnome-session',
     'openrc/gnome-session-wayland',
     'openrc/gnome-session-x11',
     'openrc/gnome-shell-wayland',
@@ -138,9 +138,11 @@ else
     'openrc/gnome-session-init',
     'openrc/gnome-session-shutdown',
     'openrc/gnome-session-monitor',
-    'openrc/gnome-settings-daemon',
+    'openrc/gnome-settings-daemon-wayland',
+    'openrc/gnome-settings-daemon-x11',
     'openrc/gnome-session-dbus',
     'openrc/gsd',
+    'openrc/gsd-xsettings',
   ]
   # if have_x11
   #   openrc_target += [
@@ -166,7 +168,7 @@ else
     'gsd-usb-protection',
     'gsd-wacom',
     'gsd-wwan',
-    'gsd-xsettings',
+#    'gsd-xsettings',
   ]
 
   # Install the primary services

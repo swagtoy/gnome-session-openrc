@@ -9,8 +9,8 @@ output_logger="logger"
 error_logger="logger"
 
 supervisor=supervise-daemon
-description="GNOME Shell"
+description="GNOME Shell (wayland)"
 command="/usr/bin/gnome-shell"
 command_args="--wayland"
 #command_background="true"
-pidfile="${XDG_RUNTIME_DIR}/gnome-shell.pid"
+pidfile="${XDG_RUNTIME_DIR}/gnome-shell-wayland.pid"

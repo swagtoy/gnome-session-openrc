@@ -5,10 +5,12 @@ export XDG_CURRENT_DESKTOP
 # HACK: Need better openrc env handling
 DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 export DBUS_SESSION_BUS_ADDRESS
+DISPLAY=:2
+export DISPLAY
 
 supervisor=supervise-daemon
-description="GNOME Shell"
+description="GNOME Shell (x11)"
 command="/usr/bin/gnome-shell"
 command_args="--x11"
 #command_background="true"
-pidfile="${XDG_RUNTIME_DIR}/gnome-shell.pid"
+pidfile="${XDG_RUNTIME_DIR}/gnome-shell-x11.pid"

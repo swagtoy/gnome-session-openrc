@@ -1,0 +1,11 @@
+#!/sbin/openrc-run
+
+DISPLAY=:2
+export DISPLAY
+
+supervisor=supervise-daemon
+description="${RC_SVCNAME} daemon"
+command="/usr/libexec/${RC_SVCNAME}"
+command_args=""
+command_background="true"
+pidfile="${XDG_RUNTIME_DIR}/${RC_SVCNAME}.pid"

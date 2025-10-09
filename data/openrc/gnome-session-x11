@@ -2,13 +2,18 @@
 
 description="GNOME Session (x11)"
 
-_session="${RC_SVCNAME#*.}"
+gs_x11_session="${RC_SVCNAME#*.}"
 
 depend() {
-	if [ "${_session}" = "gnome-login" ]; then
+	need dbus
+	if [ "${gs_x11_session}" = "gnome-login" ]; then
 		need gnome-shell-x11.gnome-login
 	else
 		need gnome-shell-x11
 	fi
-	need "gnome-session.${_session}"
+	# need "gnome-session.${gs_x11_session}"
+	need gnome-settings-daemon-x11
+	need "gnome-session-dbus.${gnome_session}"
+	need gnome-session-monitor
+	need gnome-session-init
 }
