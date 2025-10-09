@@ -13,7 +13,7 @@ depend() {
 	fi
 	# need "gnome-session.${gs_x11_session}"
 	need gnome-settings-daemon-x11
-	need "gnome-session-dbus.${gnome_session}"
+	need "gnome-session-dbus.${gs_x11_session}"
 	need gnome-session-monitor
 	need gnome-session-init
 }

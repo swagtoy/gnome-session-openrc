@@ -15,7 +15,7 @@ depend() {
 	fi
 	# need "gnome-session.${gs_wl_session}"
 	need gnome-settings-daemon-wayland
-	need "gnome-session-dbus.${gnome_session}"
+	need "gnome-session-dbus.${gs_wl_session}"
 	need gnome-session-monitor
 	need gnome-session-init
 }
