@@ -192,7 +192,6 @@ else
   targets = [
     'gnome-session-wayland',
     'gnome-session-x11',
-    'gnome-session',
     'gnome-session-dbus',
   ]
   
