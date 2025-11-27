@@ -26,9 +26,6 @@
 #include <sys/syslog.h>
 #include <rc.h>
 
-#include "glib-object.h"
-#include "gsm-util.h"
-
 typedef struct {
         GDBusConnection *session_bus;
         GMainLoop *loop;
