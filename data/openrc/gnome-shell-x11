@@ -7,6 +7,8 @@ export XDG_SESSION_TYPE
 # HACK: Need better openrc env handling
 DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 export DBUS_SESSION_BUS_ADDRESS
+XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/$USER/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share"
+export XDG_DATA_DIRS
 DISPLAY=:2
 export DISPLAY
 
