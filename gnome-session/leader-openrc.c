@@ -45,7 +45,7 @@ leader_clear (Leader *ctx)
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC (Leader, leader_clear);
 
 static gboolean
-async_run_cmd(gchar** argv, GError **error)
+async_run_cmd (gchar **argv, GError **error)
 {
         return g_spawn_async(NULL,
                              argv,
@@ -65,7 +65,7 @@ openrc_unit_action (const char       *unit,
         g_autofree char *service = rc_service_resolve(unit);
         if (!service)
         {
-                g_debug("Couldn't resolve service '%s'", unit);
+                g_debug ("Couldn't resolve service '%s'", unit);
                 return FALSE;
         }
         gchar *argv[] = { service, "-U", action, NULL };
@@ -75,33 +75,16 @@ openrc_unit_action (const char       *unit,
 
 static gboolean
 openrc_start_unit (const char       *unit,
-                    GError          **error)
+                   GError          **error)
 {
-	return openrc_unit_action(unit, "start", error);
+        return openrc_unit_action (unit, "start", error);
 }
 
 static gboolean
 openrc_stop_unit (const char       *unit,
-                    GError          **error)
+                  GError          **error)
 {
-	return openrc_unit_action(unit, "stop", error);
-}
-
-static gboolean
-systemd_reset_failed (GDBusConnection  *connection,
-                      GError          **error)
-{
-        g_autoptr(GVariant) reply = NULL;
-        reply = g_dbus_connection_call_sync (connection,
-                                             "org.freedesktop.systemd1",
-                                             "/org/freedesktop/systemd1",
-                                             "org.freedesktop.systemd1.Manager",
-                                             "ResetFailed",
-                                             NULL,
-                                             NULL,
-                                             G_DBUS_CALL_FLAGS_NO_AUTO_START,
-                                             -1, NULL, error);
-        return reply != NULL;
+        return openrc_unit_action (unit, "stop", error);
 }
 
 static gboolean
@@ -110,11 +93,6 @@ leader_term_or_int_signal_cb (gpointer data)
         Leader *ctx = data;
 
         g_debug ("Session termination requested");
-
-        /* Start a shutdown explicitly. */
-        //systemd_start_unit (ctx->session_bus, "gnome-session-shutdown.target",
-        //                    "replace-irreversibly", NULL);
-        
 
         if (write (ctx->fifo_fd, "S", 1) < 0) {
                 g_warning ("Failed to signal shutdown to monitor: %m");
@@ -220,13 +198,13 @@ monitor_hangup_cb (int          fd,
 }
 
 static void
-debug_logger(gchar const *log_domain,
-             GLogLevelFlags log_level,
-             gchar const *message,
-             gpointer user_data)
+debug_logger (gchar const *log_domain,
+              GLogLevelFlags log_level,
+              gchar const *message,
+              gpointer user_data)
 {
-        printf("%s\n", message);
-        syslog(LOG_INFO, "%s", message);
+        printf ("%s\n", message);
+        syslog (LOG_INFO, "%s", message);
 }
 
 /**
@@ -265,9 +243,8 @@ debug_logger(gchar const *log_domain,
 int
 main (int argc, char **argv)
 {
-#if 1
+        // Hook into syslog, as on an openrc system it's probably more convenient
         g_log_set_default_handler(debug_logger, NULL);
-#endif
         g_autoptr (GError) error = NULL;
         g_auto (Leader) ctx = { .fifo_fd = -1 };
         const char *session_name = NULL;
@@ -290,32 +267,35 @@ main (int argc, char **argv)
         // strncmp because we also have gdm-greeter-{2,3,4,...}
         if (strncmp(user, "gdm-greeter", sizeof("gdm-greeter")) == 0)
         {
-                 home_dir = g_strdup_printf("/var/lib/%s", user);
+                home_dir = g_strdup_printf("/var/lib/%s", user);
 
-                 // Need to hijack the home to point to /var/lib because /var/run/... gets nuked on each gdm start
-                 config_dir = g_strdup_printf("%s/.config", home_dir);
-                 g_setenv("XDG_CONFIG_HOME", config_dir, TRUE);
-                 g_setenv("HOME", home_dir, TRUE);
+                // Need to hijack the home to point to /var/lib because /var/run/... gets nuked on each gdm start
+                config_dir = g_strdup_printf("%s/.config", home_dir);
+                g_setenv("XDG_CONFIG_HOME", config_dir, TRUE);
+                g_setenv("HOME", home_dir, TRUE);
         }
+        else
+                g_warning("The gdm-greeter-{1,2,3,4} user wasn't found. Expect stuff to break.")
         
-        // Finally, get started
+        // Finally, let's get started
         rc_set_user();
         
-	char const *session_type = g_getenv("XDG_SESSION_TYPE");
+        char const *session_type = g_getenv("XDG_SESSION_TYPE");
         char const *home         = g_getenv("HOME");
         g_info("XDG_RUNTIME_DIR: %s", g_getenv("XDG_RUNTIME_DIR"));
         
         // TODO what about custom XDG config directory?
         g_autofree char *gnome_runlevel_dir = g_strdup_printf("%s/.config/rc/runlevels/gnome-session", home);
         if (!g_mkdir_with_parents(gnome_runlevel_dir, 0755))
-                g_info("Directory exists. OK");
-        
+                g_debug("Directory exists. OK");
+
         g_debug("runlevel dir: %s", gnome_runlevel_dir);
 
         debug_string = g_getenv ("GNOME_SESSION_DEBUG");
         if (debug_string != NULL)
-            g_log_set_debug_enabled (atoi (debug_string) == 1);
-        g_log_set_debug_enabled(TRUE);
+                g_log_set_debug_enabled (atoi (debug_string) == 1);
+        else
+                g_log_set_debug_enabled(TRUE);
         g_debug("Hi! from leader-openrc.");
 
         ctx.loop = g_main_loop_new (NULL, TRUE);
@@ -344,11 +324,10 @@ main (int argc, char **argv)
                 g_debug("Service in state: %d", state);
         }
         
-        
         if (!rc_runlevel_stack("gnome-session", "default"))
                 g_info("Couldn't set runlevel stack");
         if (!rc_runlevel_exists("gnome-session"))
-                g_info("No runlevel? No good!"); // next function will fail now, but librc error reporting sucks so we check this specifically
+                g_info("No runlevel \"gnome-session\" seen!"); // next function will fail now, but librc error reporting sucks so we check this specifically
         if (!rc_service_add("gnome-session", target))
         {
                 g_info("Couldn't add service to gnome-session runlevel: %s", strerror(errno));
@@ -356,14 +335,11 @@ main (int argc, char **argv)
 
         g_message ("Starting GNOME session target: %s", target);
 
-        //if (!openrc_start_unit (target, &error))
-        //        g_error ("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
-        // no
+        // No way that i'm aware of to enter a user runlevel from librc :/
         gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "gnome-session", NULL };
         if (!async_run_cmd(rl_argv, &error))
                 g_error("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
         
-        // TODO this may be wrong for gdm-greeter now
         fifo_path = g_build_filename (g_get_user_runtime_dir (),
                                       "gnome-session-leader-fifo",
                                       NULL);
