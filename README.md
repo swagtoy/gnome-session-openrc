@@ -9,14 +9,9 @@ This was created for Gentoo, as we plan to use this but only apply a patch over 
 
 For other distributions that use OpenRC, as far as I'm aware, things should also work just fine. YMMV :-)
 
-# Applying the changes
+# Setting up
 
-First, apply the changes:
-
-```sh
-$ git clone https://gitlab.gnome.org/GNOME/gnome-session.git
-$ rsync -av gnome-session-openrc/ /path/to/gnome-session
-```
+TODO: New instructions from installed gnome-session
 
 Now create the `gdm-greeter` user (unless you build with userdb support, which you probably haven't yet as I write this):
 
@@ -27,10 +22,7 @@ $ useradd -rm -d /var/lib/gdm-greeter -G gdm gdm-greeter
 
 You may add `gdm-greeter{-2,-3,-4}` as well but this is an edge case for multiseat greeters. Best to wait until userdb support (properly) lands into elogind.
 
-> [!NOTE]
-> The /var/lib/gdm-greeter user must be done until [GNOME/gdm#325](https://gitlab.gnome.org/GNOME/gdm/-/merge_requests/325) gets merged
-
-For each user you want to login as, add the `dbus` *user* service to the boot runlevel (this blocks pam_openrc.so from finishing before `dbus` is ready, and on some devices may cause gnome-session to not start):
+For each user you want to login as, add the `dbus` *user* service to the boot runlevel (this blocks pam_openrc.so from finishing before `dbus` is ready, which on some devices may cause gnome-session to not start):
 
 ```
 $ rc-update -U add dbus boot
@@ -48,6 +40,5 @@ And of course, update your PAMs if you haven't:
 
 0. Append `-session optional pam_openrc.so` to `/etc/pam.d/gdm-launch-environment`.
 0. Add `-session optional pam_openrc.so` before `session include system-local-login` (this is a weird workaround, haven't figured it out yet).
-
 
 Happy GNOMEing!

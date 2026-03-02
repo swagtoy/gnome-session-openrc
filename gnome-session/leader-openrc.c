@@ -2,6 +2,7 @@
  *
  * Copyright (C) 2006 Novell, Inc.
  * Copyright (C) 2008 Red Hat, Inc.
+ * Copyright (C) 2026 Hyland B. <me@ow.swag.toys>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -18,7 +19,6 @@
  */
 
 #include <string.h>
-#include <config.h>
 
 #include <glib.h>
 #include <glib-unix.h>
@@ -123,6 +123,7 @@ graphical_session_pre_state_changed_cb (GDBusProxy  *proxy,
         }
 }
 
+// TODO purge this code
 static gboolean
 monitor_hangup_cb (int          fd,
                    GIOCondition condition,
@@ -275,7 +276,7 @@ main (int argc, char **argv)
                 g_setenv("HOME", home_dir, TRUE);
         }
         else
-                g_warning("The gdm-greeter-{1,2,3,4} user wasn't found. Expect stuff to break.")
+                g_warning("The gdm-greeter-{1,2,3,4} user wasn't found. Expect stuff to break.");
         
         // Finally, let's get started
         rc_set_user();

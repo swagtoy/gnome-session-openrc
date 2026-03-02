@@ -1,0 +1,1 @@
+option('x11', type: 'boolean', value: false, description: 'X11 session support')
