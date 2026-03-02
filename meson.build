@@ -35,8 +35,7 @@ pkg = import('pkgconfig')
 
 top_inc = include_directories('.')
 
-subdir('gnome-session')
-# subdir('tools')
+subdir('src')
 # subdir('data')
 
 summary_dirs = {

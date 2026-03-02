@@ -273,14 +273,8 @@ main (int argc, char *argv[])
                 { NULL },
         };
 
-        /* Initialize the i18n stuff */
-        setlocale (LC_ALL, "");
-        bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
-        bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-        textdomain (GETTEXT_PACKAGE);
-
         ctx = g_option_context_new ("");
-        g_option_context_add_main_entries (ctx, options, GETTEXT_PACKAGE);
+        g_option_context_add_main_entries (ctx, options, NULL);
         if (! g_option_context_parse (ctx, &argc, &argv, &error)) {
                 g_warning ("Unable to start: %s", error->message);
                 exit (1);
