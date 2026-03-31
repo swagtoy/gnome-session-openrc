@@ -3,7 +3,7 @@ sources = files(
 )
 
 executable(
-	meson.project_name() + '-init-worker',
+	'gnome-session-init-worker',
 	sources,
 	include_directories: top_inc,
 	dependencies: session_bin_deps,
@@ -16,7 +16,7 @@ sources = files(
 )
 
 executable(
-	meson.project_name() + '-ctl',
+	'gnome-session-ctl',
 	sources,
 	include_directories: top_inc,
 	dependencies: session_bin_deps,
