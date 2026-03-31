@@ -58,36 +58,6 @@ async_run_cmd (gchar **argv, GError **error)
 }
 
 static gboolean
-openrc_unit_action (const char       *unit,
-                    const char       *action,
-                    GError          **error)
-{
-        g_autofree char *service = rc_service_resolve(unit);
-        if (!service)
-        {
-                g_debug ("Couldn't resolve service '%s'", unit);
-                return FALSE;
-        }
-        gchar *argv[] = { service, "-U", action, NULL };
-        gboolean res = async_run_cmd(argv, error);
-        return res;
-}
-
-static gboolean
-openrc_start_unit (const char       *unit,
-                   GError          **error)
-{
-        return openrc_unit_action (unit, "start", error);
-}
-
-static gboolean
-openrc_stop_unit (const char       *unit,
-                  GError          **error)
-{
-        return openrc_unit_action (unit, "stop", error);
-}
-
-static gboolean
 leader_term_or_int_signal_cb (gpointer data)
 {
         Leader *ctx = data;
@@ -255,11 +225,11 @@ main (int argc, char **argv)
         g_autofree char *home_dir = NULL;
         g_autofree char *config_dir = NULL;
         struct stat statbuf;
-        
+
         if (argc < 2)
             g_error ("No session name was specified");
         session_name = argv[1];
-        
+
         // probably not rely on this
         char const *user = g_getenv("USER");
         if (!user)
@@ -277,14 +247,14 @@ main (int argc, char **argv)
         }
         else
                 g_warning("The gdm-greeter-{1,2,3,4} user wasn't found. Expect stuff to break.");
-        
+
         // Finally, let's get started
         rc_set_user();
-        
+
         char const *session_type = g_getenv("XDG_SESSION_TYPE");
         char const *home         = g_getenv("HOME");
         g_info("XDG_RUNTIME_DIR: %s", g_getenv("XDG_RUNTIME_DIR"));
-        
+
         // TODO what about custom XDG config directory?
         g_autofree char *gnome_runlevel_dir = g_strdup_printf("%s/.config/rc/runlevels/gnome-session", home);
         if (!g_mkdir_with_parents(gnome_runlevel_dir, 0755))
@@ -308,7 +278,7 @@ main (int argc, char **argv)
         /* XDG_SESSION_TYPE from the console is TTY which isn't a service and doesn't make
             too much sense anyway */
         if (session_type && strcmp(session_type, "tty") == 0)
-                session_type = "wayland"; 
+                session_type = "wayland";
         target = g_strdup_printf ("gnome-session-%s.%s",
                                   session_type ? session_type : "wayland", session_name);
 
@@ -324,7 +294,7 @@ main (int argc, char **argv)
         default:
                 g_debug("Service in state: %d", state);
         }
-        
+
         if (!rc_runlevel_stack("gnome-session", "default"))
                 g_info("Couldn't set runlevel stack");
         if (!rc_runlevel_exists("gnome-session"))
@@ -340,7 +310,7 @@ main (int argc, char **argv)
         gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "gnome-session", NULL };
         if (!async_run_cmd(rl_argv, &error))
                 g_error("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
-        
+
         fifo_path = g_build_filename (g_get_user_runtime_dir (),
                                       "gnome-session-leader-fifo",
                                       NULL);
