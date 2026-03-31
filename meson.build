@@ -36,7 +36,7 @@ pkg = import('pkgconfig')
 top_inc = include_directories('.')
 
 subdir('src')
-# subdir('data')
+subdir('data')
 
 summary_dirs = {
   'prefix': get_option('prefix'),
