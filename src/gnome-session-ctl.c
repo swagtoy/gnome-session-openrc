@@ -302,17 +302,14 @@ main (int argc, char *argv[])
                 do_signal_init ();
         } else if (opt_restart_dbus) {
                 do_restart_dbus ();
-        } else if (opt_shutdown) {
+        } else if (opt_shutdown || opt_monitor) {
+                if (opt_monitor)
+                        do_monitor_leader();
 #ifdef USE_OPENRC
                 gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "default", NULL };
                 if (!async_run_cmd(rl_argv, &error))
                         g_error("Failed to start unit");
 #else
-                do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly");
-#endif
-        } else if (opt_monitor) {
-                do_monitor_leader ();
-#ifndef USE_OPENRC
                 do_start_unit ("gnome-session-shutdown.target", "replace-irreversibly");
 #endif
         } else if (opt_exec_stop_check) {
