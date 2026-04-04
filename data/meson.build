@@ -49,6 +49,12 @@ foreach gsd : openrc_gsd
   )
 endforeach
 
+# Install the wrapper script
+install_data(
+  'gnome-session-service-wrapper',
+  install_dir: session_libexecdir
+)
+
 # Create services like gnome-session.{gnome,gnome-login,...}
 gnome_sessions = [ 'gnome', 'gnome-login', 'gnome-initial-setup' ]
 targets = [

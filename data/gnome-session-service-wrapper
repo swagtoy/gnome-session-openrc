@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# OpenRC cannot decide on its own what to do if a process
+# terminates. `gnome-session-service' will terminate when you logout
+# through typical means, but unfortunately, we must signal to the fifo
+# socket to also shutdown so we can 'cleanly' exit here with
+# gnome-session-ctl --shutdown.
+#
+# Admittedly, this is all the gnome-session-shutdown script does, but
+# to be consistent, it is still wired up that way.
+
+PATH="/usr/local/libexec:/usr/libexec:$PATH"
+gnome-session-service "$@"
+rc-service -U gnome-session-shutdown start
