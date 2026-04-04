@@ -100,6 +100,16 @@ typedef struct {
         gint fifo_fd;
 } MonitorLeader;
 
+/* Usually equivalent to just 'exiting' here. */
+static void
+switch_to_runlevel(char *runlvl)
+{
+        g_autoptr(GError) error = NULL;
+        gchar *rl_argv[] = { "/usr/bin/openrc", "-U", runlvl, NULL };
+        if (!async_run_cmd(rl_argv, &error))
+                g_error("Failed to start unit");
+}
+
 static gboolean
 leader_term_or_int_signal_cb (gpointer user_data)
 {
@@ -231,9 +241,7 @@ main (int argc, char *argv[])
         } else if (opt_shutdown || opt_monitor) {
                 if (opt_monitor)
                         do_monitor_leader();
-                gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "default", NULL };
-                if (!async_run_cmd(rl_argv, &error))
-                        g_error("Failed to start unit");
+                switch_to_runlevel("default");
         } else {
                 g_assert_not_reached ();
         }
