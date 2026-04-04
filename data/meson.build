@@ -37,14 +37,14 @@ openrc_gsd = [
 # Install the primary services
 install_data(
   openrc_target,
-  install_dir: get_option('prefix') + '/etc/user/init.d'
+  install_dir: '/etc/user/init.d'
 )
 
 # Create symlinks of gsd daemons
 foreach gsd : openrc_gsd
   install_symlink(
     gsd,
-    install_dir: get_option('prefix') + '/etc/user/init.d',
+    install_dir: '/etc/user/init.d',
     pointing_to: 'gsd'
   )
 endforeach
@@ -61,7 +61,7 @@ foreach session : gnome_sessions
   foreach target : targets
     install_symlink(
       target + '.' + session,
-      install_dir: get_option('prefix') + '/etc/user/init.d',
+      install_dir: '/etc/user/init.d',
       pointing_to: target
     )
   endforeach
