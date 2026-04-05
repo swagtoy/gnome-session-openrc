@@ -2,7 +2,7 @@ project(
   'gnome-session-openrc', 'c',
   version: '49.0',
   license: 'GPL2+',
-  meson_version: '>= 0.60.0'
+  meson_version: '>= 0.61.0'
 )
 
 session_version = meson.project_version()
@@ -45,3 +45,4 @@ summary_dirs = {
 }
 
 summary(summary_dirs, section: 'Directories')
+summary({ 'X11 services': have_x11 }, section: 'Miscellaneous')
