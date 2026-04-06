@@ -1,14 +1,16 @@
-# GNOME Session for OpenRC!
+# GNOME Session for Dinit!
+###This is a first attempt and should not be considered usable as of 2026-04-06###
 
-This is an OpenRC leader for GNOME Session. It creates a new leader,
-ctl tool, as well as some openrc init scripts to make GNOME session
+
+This is a dinit leader for GNOME Session. It creates a new leader,
+ctl tool, as well as some dinit init scripts to make GNOME session
 Just Work.
 
 This was intended for use in Gentoo, but for other distributions that
-use OpenRC, things should also work just fine and I've taken some time
+use dinit, things should also work just fine and I've taken some time
 to ensure it'll work smoothly: as long as you apply the GNOME Session
-patch. YMMV, but please don't be shy to reach out over GH issues for
-assistance and I may be able to help you! :-)
+patch. YMMV.
+
 
 # Setting up
 
@@ -47,26 +49,26 @@ case for multiseat greeters. Best to wait until userdb support
 alternatives for userdb are cropping up!).
 
 OK, now for each user you want to login as, add the `dbus` *user*
-service to the boot runlevel (this blocks pam_openrc.so from finishing
+service to the boot runlevel (this blocks %PAM_COMMAND% from finishing
 before `dbus` is ready, which on some devices may cause gnome-session
 to not start):
 
 ```
-$ rc-update -U add dbus boot
+$ %dinit command goes here% -U add dbus boot
 ```
 
 Assuming you already installed GNOME 49 and GDM 49, then you can build
-the gnome-session-openrc in all its glory!
+the gnome-session-dinit in all its glory!
 
 ```
-$ cd /path/to/gnome-session-openrc
+$ cd /path/to/gnome-session-dinit
 $ meson setup build --prefix /usr
 $ cd build && ninja && sudo ninja install
 ```
 
 And of course, update your PAMs for GDM if you haven't:
 
-0. Append `-session optional pam_openrc.so` to `/etc/pam.d/gdm-launch-environment`.
-0. Add `-session optional pam_openrc.so` before `session include system-local-login` (this is a weird workaround, haven't figured it out yet).
+0. Append `-session optional pam_dinit.so` to `/etc/pam.d/gdm-launch-environment`.
+0. Add `-session optional pam_dinit.so` before `session include system-local-login` (this is a weird workaround, haven't figured it out yet).
 
 Happy GNOMEing!
