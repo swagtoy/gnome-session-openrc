@@ -1,14 +1,8 @@
 #!/sbin/openrc-run
 
-XDG_CURRENT_DESKTOP=GNOME
-export XDG_CURRENT_DESKTOP
-XDG_SESSION_TYPE=wayland
-export XDG_SESSION_TYPE
-# HACK: Need better openrc env handling
+# TODO: Don't think we need this one
 DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 export DBUS_SESSION_BUS_ADDRESS
-XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/$USER/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share"
-export XDG_DATA_DIRS
 output_logger="logger"
 error_logger="logger"
 
@@ -16,5 +10,19 @@ supervisor=supervise-daemon
 description="GNOME Shell (wayland)"
 command="/usr/bin/gnome-shell"
 command_args="--wayland"
-#command_background="true"
 pidfile="${XDG_RUNTIME_DIR}/gnome-shell-wayland.pid"
+_gsl_file="${XDG_RUNTIME_DIR}/gnome-session-leader.pid"
+
+start_pre()
+{
+	if ! [ -f ${_gsl_file} ] ; then
+		eerror "${_gsl_file} doesn't exist, which means you probably started"
+		eerror "this manually, or the gnome-session openrc leader broke."
+		return 1
+	fi
+
+	# Now we'll get the environ from that
+	while read -d $'\0' line ; do
+		export "${line}"
+	done < /proc/$(cat ${_gsl_file})/environ
+}

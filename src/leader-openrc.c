@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include <unistd.h>
 #include <glib.h>
 #include <glib-unix.h>
 #include <gio/gio.h>
@@ -104,6 +105,8 @@ main (int argc, char **argv)
         g_autofree char *fifo_path = NULL;
         g_autofree char *home_dir = NULL;
         g_autofree char *config_dir = NULL;
+        g_autofree char *pid_path = NULL;
+        g_autofree char *pid_str = NULL;
         struct stat statbuf;
 
         if (argc < 2)
@@ -183,11 +186,27 @@ main (int argc, char **argv)
 
         g_message ("Starting GNOME session target: %s", target);
 
+        // This is a hack. We want to store the pid of this process in
+        // a predictable path for the openrc scripts. We do this
+        // because we later get at /proc/{whatami}/environ. Later this
+        // shouldn't be the case, but it is for now.
+        pid_t whatami = getpid();
+        pid_path = g_build_filename (g_get_user_runtime_dir (),
+                                     "gnome-session-leader.pid",
+                                     NULL);
+        g_remove(pid_path);
+        pid_str = g_strdup_printf("%i", whatami);
+        if (!g_file_set_contents(pid_path, pid_str, -1, &error))
+        {
+                g_error("Couldn't write PID to file %s: %s", pid_path, error->message);
+        }
+
         // No way that i'm aware of to enter a user runlevel from librc :/
         gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "gnome-session", NULL };
         if (!async_run_cmd(rl_argv, &error))
                 g_error("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
 
+        // fifo bits for ctl
         fifo_path = g_build_filename (g_get_user_runtime_dir (),
                                       "gnome-session-leader-fifo",
                                       NULL);
