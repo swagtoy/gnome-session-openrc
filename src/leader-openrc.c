@@ -202,7 +202,7 @@ main (int argc, char **argv)
         }
 
         // No way that i'm aware of to enter a user runlevel from librc :/
-        gchar *rl_argv[] = { "/usr/bin/openrc", "-U", "gnome-session", NULL };
+        gchar *rl_argv[] = { "/sbin/openrc", "-U", "gnome-session", NULL };
         if (!async_run_cmd(rl_argv, &error))
                 g_error("Failed to start unit %s: %s", target, error ? error->message : "(no message)");
 

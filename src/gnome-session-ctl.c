@@ -105,7 +105,7 @@ static void
 switch_to_runlevel(char *runlvl)
 {
         g_autoptr(GError) error = NULL;
-        gchar *rl_argv[] = { "/usr/bin/openrc", "-U", runlvl, NULL };
+        gchar *rl_argv[] = { "/sbin/openrc", "-U", runlvl, NULL };
         if (!async_run_cmd(rl_argv, &error))
                 g_error("Failed to start unit");
 }
