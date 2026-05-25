@@ -10,8 +10,15 @@ supervisor=supervise-daemon
 description="GNOME Shell (wayland)"
 command="/usr/bin/gnome-shell"
 command_args="--wayland"
+command_background="true"
 pidfile="${XDG_RUNTIME_DIR}/gnome-shell-wayland.pid"
 _gsl_file="${XDG_RUNTIME_DIR}/gnome-session-leader.pid"
+
+depend()
+{
+	after dbus
+	after gnome-session-dbus.gnome
+}
 
 start_pre()
 {

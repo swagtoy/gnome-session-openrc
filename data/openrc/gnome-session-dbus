@@ -1,10 +1,16 @@
 #!/sbin/openrc-run
 
-dbus_session="${RC_SVCNAME#*.}"
+DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+export DBUS_SESSION_BUS_ADDRESS
+_dbus_session="${RC_SVCNAME#*.}"
 
 # supervisor=supervise-daemon
 description="GNOME session dbus daemon"
 command="/usr/libexec/gnome-session-service-wrapper"
-command_args='--session="${dbus_session}"'
+command_args='--session="${_dbus_session}"'
 command_background="true"
-pidfile="${XDG_RUNTIME_DIR}/gnome-session-dbus-${dbus_session}.pid"
+pidfile="${XDG_RUNTIME_DIR}/gnome-session-dbus-${_dbus_session}.pid"
+
+depend() {
+	after dbus
+}
