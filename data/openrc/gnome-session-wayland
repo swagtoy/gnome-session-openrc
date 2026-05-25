@@ -4,18 +4,18 @@ description="GNOME Session (wayland)"
 output_logger="logger"
 error_logger="logger"
 
-gs_wl_session="${RC_SVCNAME#*.}"
+_gs_wl_session="${RC_SVCNAME#*.}"
 
 depend() {
 	need dbus
-	if [ "${gs_wl_session}" = "gnome-login" ]; then
+	need "gnome-session-dbus.${_gs_wl_session}"
+	if [ "${_gs_wl_session}" = "gnome-login" ]; then
 		need gnome-shell-wayland.gnome-login
 	else
 		need gnome-shell-wayland
 	fi
 	# need "gnome-session.${gs_wl_session}"
 	need gnome-settings-daemon-wayland
-	need "gnome-session-dbus.${gs_wl_session}"
 	need gnome-session-monitor
 	need gnome-session-init
 }
