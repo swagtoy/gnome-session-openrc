@@ -5,21 +5,21 @@ description="GNOME Settings Daemon"
 #pidfile="/tmp/gnome-shell.pid"
 
 depend() {
-	need gsd-a11y-settings       
-	need gsd-color               
+	need gsd-a11y-settings
+	need gsd-color
 	need gsd-datetime
-	need gsd-housekeeping        
-	need gsd-keyboard            
-	need gsd-media-keys          
-	need gsd-power               
-	need gsd-print-notifications 
-	need gsd-rfkill        
-	need gsd-screensaver-proxy   
-	need gsd-sharing             
-#	need gsd-smartcard           
-	need gsd-sound               
-	need gsd-usb-protection      
-#	need gsd-wacom               
-#	need gsd-wwan                
-#	need gsd-xsettings           
+	need gsd-housekeeping
+	need gsd-keyboard
+	need gsd-media-keys
+	need gsd-power
+	need gsd-print-notifications
+	need gsd-rfkill
+	need gsd-screensaver-proxy
+	need gsd-sharing
+#	need gsd-smartcard
+	need gsd-sound
+	need gsd-usb-protection
+#	need gsd-wacom
+#	need gsd-wwan
+#	need gsd-xsettings
 }
