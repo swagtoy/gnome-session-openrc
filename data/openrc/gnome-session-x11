@@ -15,5 +15,5 @@ depend() {
 	need gnome-settings-daemon-x11
 	need "gnome-session-dbus.${gs_x11_session}"
 	need gnome-session-monitor
-	need gnome-session-init
+	need gnome-session-init-x11
 }

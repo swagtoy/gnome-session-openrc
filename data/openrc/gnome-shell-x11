@@ -10,8 +10,16 @@ supervisor=supervise-daemon
 description="GNOME Shell (x11)"
 command="/usr/bin/gnome-shell"
 command_args="--x11"
+notify="socket:ready"
+
 pidfile="${XDG_RUNTIME_DIR}/gnome-shell-x11.pid"
 _gsl_file="${XDG_RUNTIME_DIR}/gnome-session-leader.pid"
+
+depend()
+{
+	after dbus
+	after gnome-session-dbus.gnome
+}
 
 start_pre()
 {

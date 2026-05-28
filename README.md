@@ -18,6 +18,10 @@ GNOME Gitlab. Later this may not be the case...
 
 https://gitlab.gnome.org/swagtoy/gnome-session/-/commit/419191d3897957bd8cd325f2167f3c8663969a13
 
+At the moment, you'll also need to patch GNOME shell to have elogind support:
+
+https://gitlab.gnome.org/swagtoy/gnome-shell/-/commit/ee7240469583e9ab5124ba6c3df12c91050f177e
+
 Now, when you build GNOME Session, you'll need to pass `-Dsystemd=false` like so:
 
 ```

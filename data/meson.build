@@ -2,7 +2,8 @@ openrc_target = '''
   openrc/gnome-session-wayland
   openrc/gnome-shell-wayland
   openrc/gnome-shell-wayland.gnome-login
-  openrc/gnome-session-init
+  openrc/gnome-session-init-wayland
+  openrc/gnome-session-init-x11
   openrc/gnome-session-shutdown
   openrc/gnome-session-monitor
   openrc/gnome-settings-daemon-wayland

@@ -6,7 +6,10 @@ export DBUS_SESSION_BUS_ADDRESS
 
 supervisor=supervise-daemon
 description="Gnome session init signal"
-command="/bin/sh"
-command_args="-c 'sleep 2; /usr/libexec/gnome-session-ctl --signal-init'"
-pidfile="${XDG_RUNTIME_DIR}/gnome-session-init.pid" #?
-# notify="socket:ready"
+command="/usr/libexec/gnome-session-ctl"
+command_args="--signal-init"
+pidfile="${XDG_RUNTIME_DIR}/gnome-session-init.pid"
+
+depend() {
+	after gnome-shell-wayland
+}
