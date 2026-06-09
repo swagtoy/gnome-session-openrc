@@ -12,11 +12,11 @@ assistance and I may be able to help you! :-)
 
 # Setting up
 
-Before anything, for GNOME 49, you will need to patch your GNOME
-Session with commit 419191d3 from my gnome-session fork over at the
+Before anything, for GNOME 50, you will need to patch your GNOME
+Session with commit c17b5b56 from my gnome-session fork over at the
 GNOME Gitlab. Later this may not be the case...
 
-https://gitlab.gnome.org/swagtoy/gnome-session/-/commit/419191d3897957bd8cd325f2167f3c8663969a13
+https://gitlab.gnome.org/swagtoy/gnome-session/-/commit/c17b5b56bcfcc0eba899295da7c79fb3ac98fd45
 
 At the moment, you'll also need to patch GNOME shell to have elogind support:
 
@@ -59,7 +59,7 @@ to not start):
 $ rc-update -U add dbus boot
 ```
 
-Assuming you already installed GNOME 49 and GDM 49, then you can build
+Assuming you already installed GNOME 50 and GDM 49, then you can build
 the gnome-session-openrc in all its glory!
 
 ```
