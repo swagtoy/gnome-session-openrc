@@ -12,8 +12,6 @@ session_prefix = get_option('prefix')
 session_datadir = join_paths(session_prefix, get_option('datadir'))
 session_libexecdir = join_paths(session_prefix, get_option('libexecdir'))
 
-have_x11 = get_option('x11')
-
 set_defines = [
   # package
   ['PACKAGE', meson.project_name()],
@@ -45,4 +43,3 @@ summary_dirs = {
 }
 
 summary(summary_dirs, section: 'Directories')
-summary({ 'X11 services': have_x11 }, section: 'Miscellaneous')

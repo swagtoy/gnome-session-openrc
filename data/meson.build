@@ -3,7 +3,6 @@ openrc_target = '''
   openrc/gnome-shell-wayland
   openrc/gnome-shell-wayland.gnome-login
   openrc/gnome-session-init-wayland
-  openrc/gnome-session-init-x11
   openrc/gnome-session-shutdown
   openrc/gnome-session-monitor
   openrc/gnome-settings-daemon-wayland
@@ -11,15 +10,6 @@ openrc_target = '''
   openrc/gsd
   openrc/gsd-xsettings
 '''.split()
-
-if have_x11
-  openrc_target += '''
-    openrc/gnome-session-x11
-    openrc/gnome-shell-x11
-    openrc/gnome-shell-x11.gnome-login
-    openrc/gnome-settings-daemon-x11
-  '''.split()
-endif
 
 openrc_gsd = '''
   gsd-a11y-settings
@@ -67,10 +57,6 @@ targets = [
   'gnome-session-wayland',
   'gnome-session-dbus',
 ]
-
-if have_x11
-  targets += [ 'gnome-session-x11' ]
-endif
 
 foreach session : gnome_sessions
   foreach target : targets

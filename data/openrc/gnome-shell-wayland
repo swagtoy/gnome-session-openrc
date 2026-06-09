@@ -7,7 +7,7 @@ output_logger="logger"
 error_logger="logger"
 
 supervisor=supervise-daemon
-description="GNOME Shell (wayland)"
+description="GNOME Shell"
 command="/usr/bin/gnome-shell"
 command_args="--wayland"
 notify="socket:ready"
