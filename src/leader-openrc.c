@@ -133,7 +133,6 @@ main (int argc, char **argv)
         // Finally, let's get started
         rc_set_user();
 
-        char const *session_type = g_getenv("XDG_SESSION_TYPE");
         char const *home         = g_getenv("HOME");
         g_debug("XDG_RUNTIME_DIR: %s", g_getenv("XDG_RUNTIME_DIR"));
 
@@ -155,12 +154,7 @@ main (int argc, char **argv)
         if (ctx.session_bus == NULL)
                 g_error ("Failed to obtain session bus: %s", error->message);
 
-        /* XDG_SESSION_TYPE from the console is TTY which isn't a service and doesn't make
-            too much sense anyway */
-        if (session_type && strcmp(session_type, "tty") == 0)
-                session_type = "wayland";
-        target = g_strdup_printf ("gnome-session-%s.%s",
-                                  session_type ? session_type : "wayland", session_name);
+        target = g_strdup_printf ("gnome-session-wayland.%s", session_name);
 
         RC_SERVICE state = rc_service_state(target);
         switch (state)
