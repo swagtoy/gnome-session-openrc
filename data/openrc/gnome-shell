@@ -12,7 +12,7 @@ command="/usr/bin/gnome-shell"
 command_args="--wayland"
 notify="socket:ready"
 
-pidfile="${XDG_RUNTIME_DIR}/gnome-shell-wayland.pid"
+pidfile="${XDG_RUNTIME_DIR}/gnome-shell.pid"
 _gsl_file="${XDG_RUNTIME_DIR}/gnome-session-leader.pid"
 
 depend()

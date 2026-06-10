@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 
-description="GNOME Session (wayland)"
+description="GNOME Session"
 output_logger="logger"
 error_logger="logger"
 
@@ -10,12 +10,11 @@ depend() {
 	need dbus
 	need "gnome-session-dbus.${_gs_wl_session}"
 	if [ "${_gs_wl_session}" = "gnome-login" ]; then
-		need gnome-shell-wayland.gnome-login
+		need gnome-shell.gnome-login
 	else
-		need gnome-shell-wayland
+		need gnome-shell
 	fi
-	# need "gnome-session.${gs_wl_session}"
-	need gnome-settings-daemon-wayland
+	need gnome-settings-daemon
 	need gnome-session-monitor
-	need gnome-session-init-wayland
+	need gnome-session-init
 }

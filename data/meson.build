@@ -1,11 +1,11 @@
 openrc_target = '''
-  openrc/gnome-session-wayland
-  openrc/gnome-shell-wayland
-  openrc/gnome-shell-wayland.gnome-login
-  openrc/gnome-session-init-wayland
+  openrc/gnome-session
+  openrc/gnome-shell
+  openrc/gnome-shell.gnome-login
+  openrc/gnome-session-init
   openrc/gnome-session-shutdown
   openrc/gnome-session-monitor
-  openrc/gnome-settings-daemon-wayland
+  openrc/gnome-settings-daemon
   openrc/gnome-session-dbus
   openrc/gsd
   openrc/gsd-xsettings
@@ -54,7 +54,7 @@ install_data(
 # Create services like gnome-session.{gnome,gnome-login,...}
 gnome_sessions = [ 'gnome', 'gnome-login', 'gnome-initial-setup' ]
 targets = [
-  'gnome-session-wayland',
+  'gnome-session',
   'gnome-session-dbus',
 ]
 

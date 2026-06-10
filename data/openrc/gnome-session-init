@@ -11,5 +11,5 @@ command_args="--signal-init"
 pidfile="${XDG_RUNTIME_DIR}/gnome-session-init.pid"
 
 depend() {
-	after gnome-shell-wayland
+	after gnome-shell
 }

@@ -154,7 +154,7 @@ main (int argc, char **argv)
         if (ctx.session_bus == NULL)
                 g_error ("Failed to obtain session bus: %s", error->message);
 
-        target = g_strdup_printf ("gnome-session-wayland.%s", session_name);
+        target = g_strdup_printf ("gnome-session.%s", session_name);
 
         RC_SERVICE state = rc_service_state(target);
         switch (state)
