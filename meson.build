@@ -1,6 +1,6 @@
 project(
   'gnome-session-openrc', 'c',
-  version: '49.2',
+  version: '50.0',
   license: 'GPL2+',
   meson_version: '>= 0.61.0'
 )
