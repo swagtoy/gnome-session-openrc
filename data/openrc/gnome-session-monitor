@@ -1,8 +1,15 @@
 #!/sbin/openrc-run
 
+DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+export DBUS_SESSION_BUS_ADDRESS
+
 # supervisor=supervise-daemon
 description="Gnome session monitor"
 command="/usr/libexec/gnome-session-ctl"
 command_args="--monitor"
 command_background="true"
 pidfile="${XDG_RUNTIME_DIR}/gnome-session-monitor.pid" #?
+
+depend() {
+	need dbus
+}

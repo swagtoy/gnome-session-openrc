@@ -11,5 +11,6 @@ command_args="--signal-init"
 pidfile="${XDG_RUNTIME_DIR}/gnome-session-init.pid"
 
 depend() {
+	need dbus
 	after gnome-shell-wayland
 }

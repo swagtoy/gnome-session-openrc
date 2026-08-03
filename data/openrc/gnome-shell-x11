@@ -17,7 +17,7 @@ _gsl_file="${XDG_RUNTIME_DIR}/gnome-session-leader.pid"
 
 depend()
 {
-	after dbus
+	need dbus
 	after gnome-session-dbus.gnome
 }
 

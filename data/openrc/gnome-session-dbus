@@ -12,5 +12,5 @@ command_background="true"
 pidfile="${XDG_RUNTIME_DIR}/gnome-session-dbus-${_dbus_session}.pid"
 
 depend() {
-	after dbus
+	need dbus
 }

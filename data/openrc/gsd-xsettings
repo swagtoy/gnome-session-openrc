@@ -11,3 +11,7 @@ command="/usr/libexec/${RC_SVCNAME}"
 command_args=""
 command_background="true"
 pidfile="${XDG_RUNTIME_DIR}/${RC_SVCNAME}.pid"
+
+depend() {
+	need dbus
+}

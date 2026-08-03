@@ -1,10 +1,13 @@
 #!/sbin/openrc-run
 
+DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+export DBUS_SESSION_BUS_ADDRESS
 supervisor=supervise-daemon
 description="GNOME Settings Daemon"
 #pidfile="/tmp/gnome-shell.pid"
 
 depend() {
+	need dbus
 	need gsd-a11y-settings
 	need gsd-color
 	need gsd-datetime
