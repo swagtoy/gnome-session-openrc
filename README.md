@@ -50,15 +50,6 @@ case for multiseat greeters. Best to wait until userdb support
 (properly) lands into elogind (and soon, it appears that other
 alternatives for userdb are cropping up!).
 
-OK, now for each user you want to login as, add the `dbus` *user*
-service to the boot runlevel (this blocks pam_openrc.so from finishing
-before `dbus` is ready, which on some devices may cause gnome-session
-to not start):
-
-```
-$ rc-update -U add dbus boot
-```
-
 Assuming you already installed GNOME 50 and GDM 49, then you can build
 the gnome-session-openrc in all its glory!
 

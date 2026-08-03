@@ -1,7 +1,15 @@
 #!/sbin/openrc-run
 
+# HACK: manually use dbus's hardcoded address
+DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+export DBUS_SESSION_BUS_ADDRESS
+
 # supervisor=supervise-daemon
 description="Gnome session shutdown"
 command="/usr/libexec/gnome-session-ctl"
 command_args="--shutdown"
 pidfile="${XDG_RUNTIME_DIR}/gnome-session-shutdown.pid" #?
+
+depend() {
+	need dbus
+}
