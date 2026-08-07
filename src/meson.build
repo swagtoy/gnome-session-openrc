@@ -1,3 +1,5 @@
+subdir('pam')
+
 sources = files(
 	'leader-openrc.c',
 )
@@ -23,4 +25,3 @@ executable(
 	install: true,
 	install_dir: session_libexecdir
 )
-
