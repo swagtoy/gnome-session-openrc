@@ -10,6 +10,7 @@ session_api_name = '@0@-@1@'.format(meson.project_name(), session_version.split(
 
 session_prefix = get_option('prefix')
 session_datadir = join_paths(session_prefix, get_option('datadir'))
+session_libdir = join_paths(session_prefix, get_option('libdir'))
 session_libexecdir = join_paths(session_prefix, get_option('libexecdir'))
 
 set_defines = [
@@ -20,13 +21,18 @@ set_defines = [
 ]
 
 glib_req_version = '>= 2.82.0'
-
-session_bin_deps = [
-  dependency('glib-2.0', version: glib_req_version),
+librc_dep = dependency('openrc', required: true)
+glib_dep = dependency('glib-2.0', version: glib_req_version)
+gio_deps = [
   dependency('gio-2.0', version: glib_req_version),
   dependency('gio-unix-2.0', version: glib_req_version),
+]
+
+session_bin_deps = [
+  glib_dep,
+  gio_deps,
   dependency('libelogind', version: '>=209', required: true),
-  dependency('openrc', required: true),
+  librc_dep
 ]
 
 pkg = import('pkgconfig')
