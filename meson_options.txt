@@ -1,1 +1,2 @@
+option('securedir', type: 'string', value: '', description: 'Directory to install the PAM module')
 option('x11', type: 'boolean', value: true, description: 'X11 session support')
