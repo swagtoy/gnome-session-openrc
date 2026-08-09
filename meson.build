@@ -11,6 +11,7 @@ session_api_name = '@0@-@1@'.format(meson.project_name(), session_version.split(
 session_prefix = get_option('prefix')
 session_datadir = join_paths(session_prefix, get_option('datadir'))
 session_libdir = join_paths(session_prefix, get_option('libdir'))
+session_securedir = get_option('securedir') != '' ? get_option('securedir') : join_paths(session_libdir, 'security')
 session_libexecdir = join_paths(session_prefix, get_option('libexecdir'))
 
 set_defines = [
@@ -46,6 +47,7 @@ summary_dirs = {
   'prefix': get_option('prefix'),
   'datadir': session_datadir,
   'libexecdir': session_libexecdir,
+  'securedir': session_securedir,
 }
 
 summary(summary_dirs, section: 'Directories')

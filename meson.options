@@ -1,0 +1,1 @@
+	option('securedir', type: 'string', value: '', description: 'Directory to install the PAM module')
