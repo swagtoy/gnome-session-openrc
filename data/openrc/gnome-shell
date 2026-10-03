@@ -4,8 +4,8 @@
 DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 export DBUS_SESSION_BUS_ADDRESS
 
-output_logger="logger"
-error_logger="logger"
+output_logger="logger -t $RC_SVCNAME -p daemon.info"
+error_logger="logger -t $RC_SVCNAME -p daemon.err"
 
 supervisor=supervise-daemon
 description="GNOME Shell"
