@@ -32,6 +32,13 @@ start_pre()
 
 	# Now we'll get the environ from that
 	while read -d $'\0' line ; do
-		export "${line}"
+		# We must explicitly exclude PATH however, as one of these
+		#  PATH's contains OpenRC variables.
+		case "${line}" in 'PATH='*)
+			;;
+		*)
+			export "${line}"
+			;;
+		esac
 	done < /proc/$(cat ${_gsl_file})/environ
 }
