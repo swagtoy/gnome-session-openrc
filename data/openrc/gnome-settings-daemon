@@ -8,6 +8,14 @@ supervisor=supervise-daemon
 description="GNOME Settings Daemon"
 #pidfile="/tmp/gnome-shell.pid"
 
+start() {
+	:
+}
+
+stop() {
+	:
+}
+
 depend() {
 	need dbus
 	need gsd-a11y-settings
