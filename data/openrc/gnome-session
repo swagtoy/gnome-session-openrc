@@ -10,6 +10,14 @@ error_logger="logger -t $RC_SVCNAME -p daemon.err"
 
 _gs_wl_session="${RC_SVCNAME#*.}"
 
+start() {
+	:
+}
+
+stop() {
+	:
+}
+
 depend() {
 	need dbus
 	need "gnome-session-dbus.${_gs_wl_session}"
