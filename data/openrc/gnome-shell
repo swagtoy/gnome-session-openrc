@@ -32,13 +32,15 @@ start_pre()
 
 	# Now we'll get the environ from that
 	while read -d $'\0' line ; do
-		# We must explicitly exclude PATH however, as one of these
-		#  PATH's contains OpenRC variables.
-		case "${line}" in 'PATH='*)
+		# PATH contains OpenRC variables. DBUS_SESSION_BUS_ADDRESS is
+		# gdm-wayland-session's private bus; keep the address set above.
+		case "${line}" in
+		'PATH='*|'DBUS_SESSION_BUS_ADDRESS='*)
 			;;
 		*)
 			export "${line}"
 			;;
 		esac
 	done < /proc/$(cat ${_gsl_file})/environ
+	export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 }
